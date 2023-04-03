@@ -4,7 +4,7 @@ import { Text, View } from 'react-native'
 import { getData, storeData, theme } from './components/global'
 import { Context, initialValues, reducer } from './components/userContext'
 import { ThemeProvider } from 'react-native-elements'
-import Navigations from './navigations'
+import { Navigations } from './navigations'
 
 export default function App() {
     const [values, dispatch] = React.useReducer(reducer, initialValues)

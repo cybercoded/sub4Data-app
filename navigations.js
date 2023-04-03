@@ -17,12 +17,19 @@ import { Logout } from "./screens/logOut";
 import { Welcome } from "./screens/welcome";
 import { TransacHistory } from "./screens/transactionHistory";
 import { BankTransfer } from "./screens/bankTransfer";
-import { theme } from "./components/global";
-import { View, Text } from "react-native";
+import { getData, theme } from "./components/global";
+import { Context } from "./components/userContext";
 
-export default class Navigations extends Component {
-  render() {
+export const Navigations = () => {
     const Stack = createNativeStackNavigator();
+    const [dataProfile, setDataProfile] = React.useState([])
+    React.useEffect(() => {
+      
+      getData('basicData').then((res) => {
+        setDataProfile(res);
+        console.warn(dataProfile)
+      });
+    }, [dataProfile.basicData] );
 
     return (
       
@@ -114,6 +121,7 @@ export default class Navigations extends Component {
             name="CreatePin"
             options={{ title: "Transaction PIN" }}
             component={CreatePin}
+            initialParams={{ type: "create", userId: dataProfile.fullName `!1~~`}}
           />
           <Stack.Screen
             name="TransactionHistory"
@@ -134,5 +142,4 @@ export default class Navigations extends Component {
         </Stack.Navigator>
       </NavigationContainer>
      );
-  }
-}
+};

@@ -27,10 +27,13 @@ export const Navigations = () => {
       
       getData('basicData').then((res) => {
         setDataProfile(res);
-        console.warn(dataProfile)
       });
-    }, [dataProfile.basicData] );
-
+    }, [dataProfile.userId] );
+    
+    if(!dataProfile.userId) {
+      return null;
+    }
+    
     return (
       
       <NavigationContainer>
@@ -39,6 +42,13 @@ export const Navigations = () => {
             headerStyle: {backgroundColor: theme.colors.primary}
           }}  
         >
+          
+          <Stack.Screen
+            name="CreatePin"
+            options={{ title: "Transaction PIN" }}
+            component={CreatePin}
+            initialParams={{ type: "create", userId: dataProfile.userId}}
+          />
           
           <Stack.Screen
             name="Welcome"
@@ -116,12 +126,6 @@ export const Navigations = () => {
             name="ForgotPassword"
             options={{ title: "Forgot password" }}
             component={ForgotPassword}
-          />
-          <Stack.Screen
-            name="CreatePin"
-            options={{ title: "Transaction PIN" }}
-            component={CreatePin}
-            initialParams={{ type: "create"}}
           />
           <Stack.Screen
             name="TransactionHistory"

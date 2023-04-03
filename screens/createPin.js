@@ -1,10 +1,11 @@
 import React from 'react'
 import { View } from 'react-native';
-import { API, getData, styles, theme } from '../components/global';
+import { API, Loader, getData, styles, theme } from '../components/global';
 import { Icon, Text } from 'react-native-elements';
 import { TouchableOpacity } from 'react-native';
 import isNumber from 'lodash/isNumber';
 import { indexOf, isString } from 'lodash';
+import { Context } from '../components/userContext';
 
 
 export const CreatePin = ({route, navigation}) => {
@@ -16,6 +17,8 @@ export const CreatePin = ({route, navigation}) => {
     const [pin1, setPin1] = React.useState('');
     const [pinResponseText, setPinResponseText] = React.useState(<Text>To keep your information secured</Text>);
     
+    const {valueState, valueDispatch} = React.useContext(Context);
+
     const createPinHandler = (code) => {
         const newPinAttempts = [...pinCode, code];
         setPinCode(newPinAttempts);
@@ -29,6 +32,7 @@ export const CreatePin = ({route, navigation}) => {
         if(newPinAttempts.length == 4 && pin1 == ''){
             setPin1( newPinAttempts.join('') );
             setPinCode([]);
+            setPinResponseText(<Text>To keep your information secured</Text>);
             return;
         }
 
@@ -36,10 +40,13 @@ export const CreatePin = ({route, navigation}) => {
             const stringifiedPinCode = newPinAttempts.join('');
             
             if(pin1 === stringifiedPinCode) {
-
-                API.post('update-pin.php', {code: stringifiedPinCode})
+                valueDispatch({loader: {...valueState.loader, visible: true}});
+                API.post('update-pin.php?userId='+userId, {pin: stringifiedPinCode})
                 .then(response => {
-                    getData('pinCode', response.data.pinCode);
+                    if(response.status) {
+                        getData('pinCode', response.data.pinCode);
+                    }
+                    valueDispatch({loader: {...valueState.loader, visible: false}});
                 })
                 .catch(error => {
                     console.log(error);
@@ -82,8 +89,8 @@ export const CreatePin = ({route, navigation}) => {
         }
 
         if(pinCode.length >= 4 ){
-            API.put('update.php', {code: pinCode.join('')}).then(response => {
-
+            API.put('update.php?userId='+userId, {code: pinCode.join('')}).then(response => {
+                console.warn(response);
             });
             return;
         }
@@ -95,6 +102,10 @@ export const CreatePin = ({route, navigation}) => {
     return (
 
         <View style={styles.container}>
+            <Loader
+                props={valueState.loader}
+                handler={() => valueDispatch({loader: {...valueState.loader, visible: false}})}
+            />
             <View style={{
                     flex: 1,
                     alignItems: 'center',
@@ -110,7 +121,6 @@ export const CreatePin = ({route, navigation}) => {
                 </View>
                 <View>
                     {pinResponseText}
-                    <Text>my userId { JSON.stringify(route.params) }</Text>
                 </View>
             </View>
             

@@ -11,10 +11,10 @@ export const reducer = (state, value) => {
 
 export const initialValues = {
     loader: {
-      visibile: false,
+      visible: false,
       icon: "loader", //'highlight-off' 'check-circle-outline',
       text: "Please wait",
-      actions: true,
+      actions: false,
       color: '#0CC',
     }
 };

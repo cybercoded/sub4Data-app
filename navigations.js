@@ -121,7 +121,7 @@ export const Navigations = () => {
             name="CreatePin"
             options={{ title: "Transaction PIN" }}
             component={CreatePin}
-            initialParams={{ type: "create", userId: dataProfile.fullName `!1~~`}}
+            initialParams={{ type: "create"}}
           />
           <Stack.Screen
             name="TransactionHistory"

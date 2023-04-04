@@ -37,7 +37,7 @@ export const Navigations = () => {
     return (
       
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="CreatePin"
+        <Stack.Navigator initialRouteName="Registration"
           screenOptions={{
             headerStyle: {backgroundColor: theme.colors.primary}
           }}  

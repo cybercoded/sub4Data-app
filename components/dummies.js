@@ -157,7 +157,7 @@ export const dummies = {
       visible: true,
       icon: "loader",
       text: "Please wait",
-      color: "red",
+      color: theme.colors.primary,
       actions: false,
     },
   },

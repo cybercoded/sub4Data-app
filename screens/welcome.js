@@ -8,6 +8,7 @@ import {
 import {
   storeData,
   styles,
+  theme,
 } from "../components/global";
 import { BottomSheet, Button, Icon, Input, Text } from "react-native-elements";
 import { dummies } from "../components/dummies";
@@ -18,7 +19,7 @@ export const Welcome = ({ navigation }) => {
   const { valueState, valueDispatch } = React.useContext(Context);
 
   const [IPConfigurationValue, setIPConfigurationValue] = useState('http://192.168.70.102/');
-  const [IPConfigurationModal, setIPConfigurationModal] = useState(true);
+  const [IPConfigurationModal, setIPConfigurationModal] = useState(false);
   const [sliders, setSliders] = useState({
     1: true,
     2: false,
@@ -52,8 +53,8 @@ export const Welcome = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.centerContainer}>
-      <View style={{ flex: 1, flexDirection: "column", width: "100%" }}>
+    <View style={styles.container}>
+      <View style={{ flex: 10}}>
         <View style={{ flex: 1, alignItems: "center" }}>
           <ScrollView horizontal={true}>
             {dummies.welcomePageSliders.map((slider) => (
@@ -78,7 +79,7 @@ export const Welcome = ({ navigation }) => {
               </View>
             ))}
           </ScrollView>
-          <View style={[styles.rowFlex, { width: 80 }]}>
+          <View style={[styles.rowFlex, { flex: 6, width: 80 }]}>
             {dummies.welcomePageSliders.map((slider) => (
               <TouchableOpacity
                 key={slider.id}
@@ -90,23 +91,27 @@ export const Welcome = ({ navigation }) => {
               </TouchableOpacity>
             ))}
           </View>
-          {currentSlide > 1 && (
-            <Button
-              title="Prev"
-              type="outline"
-              buttonStyle={[styles.button, { width: 100, marginBottom: 20 }]}
-              onPress={() => navSlides("prev")}
-            />
-          )}
+          <View style={{flex: 1}}>
+            {currentSlide > 1 && (
+              <Button
+                title="Prev"
+                type="clear"
+                buttonStyle={styles.button}
+                onPress={() => navSlides("prev")}
+              />
+            )}
+          </View>
         </View>
-
+      </View>
+        
+      <View style={{flex: 1}}>
         {currentSlide < Object.values(sliders).length ? (
           <Button
             title="Next"
             type="outline"
             onPress={() => navSlides("next")}
             buttonStyle={styles.button}
-            icon={<Icon name="arrow-right" size={30} color="white" />}
+            icon={<Icon name="arrow-right" size={30} color={theme.colors.primary} />}
             iconLeft
           />
         ) : (
@@ -125,29 +130,23 @@ export const Welcome = ({ navigation }) => {
         containerStyle={{ backgroundColor: "rgba(0.5, 0.25, 0, 0.2)" }}
       >
         <View>
-            <View style={styles.rowFlex}>
-                <View style={{flex: 2}}>
-                    <Input 
-                        value={IPConfigurationValue}
-                        onChangeText={value => {
-                          setIPConfigurationValue(value);
-                          console.log(value);
-                        }}
-                        inputStyle={styles.input}
-                    />
-                </View>
-                <View style={{flex: 1}}>
-                    <Button
-                        title="Configure"
-                        type="solid"
-                        onPress={() => {
-                            setIPConfigurationModal(false);
-                            storeData('localURL', IPConfigurationValue);
-                        }}
-                        buttonStyle={styles.button}
-                    />
-                </View>
-            </View>
+          <Input 
+              value={IPConfigurationValue}
+              onChangeText={value => {
+                setIPConfigurationValue(value);
+                console.log(value);
+              }}
+              inputStyle={styles.input}
+          />
+          <Button
+              title="Configure"
+              type="solid"
+              onPress={() => {
+                  setIPConfigurationModal(false);
+                  storeData('localURL', IPConfigurationValue);
+              }}
+              buttonStyle={[styles.button, {width: 200, alignSelf: 'center'}]}
+          />
         </View>
         
         

@@ -1,11 +1,13 @@
 import React from 'react'
 import { View } from 'react-native';
-import { API, Loader, getData, styles, theme } from '../components/global';
+import { API, Loader, getData, storeData, styles, theme } from '../components/global';
 import { Icon, Text } from 'react-native-elements';
 import { TouchableOpacity } from 'react-native';
 import isNumber from 'lodash/isNumber';
-import { indexOf, isString } from 'lodash';
+import delay from 'lodash/delay';
+import indexOf from 'lodash/indexOf';
 import { Context } from '../components/userContext';
+import { dummies } from '../components/dummies';
 
 
 export const CreatePin = ({route, navigation}) => {
@@ -40,14 +42,17 @@ export const CreatePin = ({route, navigation}) => {
             const stringifiedPinCode = newPinAttempts.join('');
             
             if(pin1 === stringifiedPinCode) {
-                valueDispatch({loader: {...valueState.loader, visible: true}});
+                valueDispatch({loader: {...dummies.modalProcess.loading}});
                 API.post('update-pin.php?userId='+userId, {pin: stringifiedPinCode})
-                .then(response => {
-                    if(response.status) {
-                        getData('pinCode', response.data.pinCode);
+                .then((res) => {                    
+                    if ( res.data.status === true ) {
+                        valueDispatch({loader: {...dummies.modalProcess.success, text: res.data.message}});
+                        storeData('basicData', {...valueState.basicData, pinCode: stringifiedPinCode});
                     }
-                    valueDispatch({loader: {...valueState.loader, visible: false}});
-                })
+                    delay(() => {
+                        valueDispatch({loader: {...valueState.loader, visible: false}});
+                    }, 2000);
+                    })
                 .catch(error => {
                     console.log(error);
                 });

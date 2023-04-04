@@ -400,7 +400,7 @@ export const Loader = ({ props, handler, submittion }) => {
 			) : (
 				<Icon name={props.icon} size={60} color={props.color} />
 			)}
-			<Dialog.Title title={props.text} titleStyle={{textAlign: 'center'}} />
+			<Dialog.Title title={props.text} titleStyle={{textAlign: 'center', color: props.color}} />
 			{props.actions && (
 				<Dialog.Actions>
 					{submittion && (
@@ -441,7 +441,9 @@ export const styles = StyleSheet.create({
 		flex: 1,
 		alignItems: 'center',
 		justifyContent: 'center',
-		paddingTop: 50,
+		paddingVertical: 50,
+		paddingHorizontal: 20,
+		width: '100%',
 	},
 	menuListStyle: {
 		flexBasis: '40%',
@@ -496,12 +498,11 @@ export const styles = StyleSheet.create({
 		paddingVertical: 16,
 		borderRadius: 10,
 		borderBottomWidth: 0,
-		backgroundColor: theme.colors.dim,
+		backgroundColor: theme.colors.dimmer,
 	},
 
 	button: {
 		width: '100%',
-		border: 0,
 		borderRadius: 10,
 		padding: 16,
 	},

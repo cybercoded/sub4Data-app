@@ -1,36 +1,28 @@
 import React from 'react';
 import { Image, Modal, Pressable, TextInput, View } from 'react-native';
 import { Formik } from 'formik';
-import { API, API_URL, BASE_URL, errorHandler, getData, Loader, storeData, styles, theme } from '../components/global';
+import { API, API_URL, BASE_URL, errorHandler, getData, Loader, ScrollViewHeader, storeData, styles, theme } from '../components/global';
 import { Button, Icon, Input, Text } from 'react-native-elements';
 import * as yup from 'yup';
-import { isObject } from 'lodash';
+import { delay, isObject } from 'lodash';
+import { dummies } from '../components/dummies';
+import { Context } from '../components/userContext';
 
 export const Signin = ({navigation}) => {
 
     const [passwordVisibility, setPasswordVisibility] = React.useState(true);
-    const [loader, setLoader] = React.useState({
-        visibile: false,
-        icon:  'loader', //'highlight-off' 'check-circle-outline',
-        text: 'Please wait',
-        actions: true,
-        color: theme.colors.primary,
-    });
 
-    const toggleModal = () => {
-        setLoader(prevState => ({
-            ...prevState, visibile: !prevState.visibile
-        }));
-    }
+    const { valueState, valueDispatch } = React.useContext(Context);
+
 
     return(
-        <View style={styles.centerContainer}>
-            <View style={{width: '100%'}}>
+        <View style={styles.container}>
+            <View style={{flex: 1, width: '100%'}}>
 
-                <View style={{marginVertical: 20, alignItems: 'center'}}>
-                    <Image style={{height: 100, width: 100}} source={{uri: `${BASE_URL}img/mtn-img.jpg`}} />
-                    <Text style={{marginVertical: 10, fontSize: 700}}>Sign in to your account on Tommytop</Text>
-                </View>
+                <ScrollViewHeader
+                    image={dummies.images.networks.icon}
+                    title='Register with sub4Data'
+                />
 
                 <Formik
                     initialValues={{
@@ -45,38 +37,37 @@ export const Signin = ({navigation}) => {
                         })
                     }
                     onSubmit={values => {
-                        toggleModal()
+                        valueDispatch({loader: {...dummies.modalProcess.loading}})
                         API.post('check-login.php', values).then((res) => {   
                             let userId = res.data.userId;
                             if ( res.data.status ) {
-                                setLoader({...loader, visibile: true, actions: false, icon: 'check-circle-outline', color: theme.colors.primary, text: 'Login Successful, please wait a minute to be redirected'})
+                                valueDispatch({loader: {...dummies.modalProcess.success, text: 'Login Successful, please wait to be redirected to dashboard'}})
                                 API.get(`getdata.php?userId=${userId}`).then((res) => {
                                     if ( isObject(res.data.data) && res.data.status == true) {                                       
-                                        storeData('basicData', res.data.data);
-                                        storeData('isLoggedIn', true);
-                                        setTimeout(() => {
-                                            navigation.navigate('Dashboard', {
-                                                userId: userId
-                                            })
-                                            toggleModal()
-                                        }, 5000);                                        
+                                        storeData('basicData', {...res.data.data, isLoggedIn: true});
+                                        delay(() => {
+                                            navigation.navigate('Dashboard')
+                                            valueDispatch({loader: {visible: false}})
+                                        }, 2000);                                        
                                     }
                                 });
                             }else {
-                                setLoader({...loader, visibile: true, icon: 'highlight-off', color: 'red', actions: true, text: 'Something went wrong'})
+                                valueDispatch({loader: {...dummies.modalProcess.error, text: 'Something went wrong, please try again later'}});
                             }
                         }).catch( (error) => {
-                            setLoader({...loader, visibile: true, icon: 'highlight-off', color: 'red', actions: true, text: error.message});
-                        })
+                            valueDispatch({loader: {...dummies.modalProcess.error, text: error.message}})                        })
                     }}>
                     {({ handleChange, handleBlur, handleSubmit, errors, touched, values }) => (
                     <View>
-                        <Modal animationType="slide" visible={loader.visibile} transparent={true}><Loader submittion={handleSubmit} handler={toggleModal} props={loader} /></Modal>
+                         <Loader
+                            submittion={handleSubmit}
+                            handler={() => valueDispatch({loader: {...valueState.loader, visible: false}})}
+                            props={valueState.loader}
+                        /> 
                         <Input 
                             placeholder='Email address' 
                             inputContainerStyle={styles.input} 
                             containerStyle={{paddingHorizontal: 0}} 
-                            inputStyle={{outline: 0}}
                             onChangeText={handleChange('email')}
                             onBlur={handleBlur('email')}
                             value={values.email}
@@ -86,7 +77,6 @@ export const Signin = ({navigation}) => {
                             placeholder='Password' 
                             inputContainerStyle={styles.input} 
                             containerStyle={{paddingHorizontal: 0}} 
-                            inputStyle={{outline: 0}}
                             onChangeText={handleChange('password')}
                             onBlur={handleBlur('password')}
                             value={values.password}
@@ -96,7 +86,7 @@ export const Signin = ({navigation}) => {
                         />
                         
                         <Pressable onPress={() => navigation.navigate('ForgetPassword') } style={{marginLeft: 10, flex: 1, alignItems: 'center'}} >
-                            <Text style={{color: theme.colors.primary, fontSize: 700}}>Forget password?</Text>
+                            <Text style={{color: theme.colors.primary, fontWeight: 'bold'}}>Forget password?</Text>
                         </Pressable>
 
 
@@ -104,7 +94,7 @@ export const Signin = ({navigation}) => {
                         <View style={{flex: 1, alignItems: 'center'}}>
                             <View style={styles.rowFlex}>
                                 <Text>Don't have an account?</Text>
-                                <Pressable onPress={() => navigation.navigate('Registration') } style={{marginLeft: 10}} ><Text style={{color: theme.colors.primary, fontSize: 700}}>Sign up</Text></Pressable>
+                                <Pressable onPress={() => navigation.navigate('Registration') } style={{marginLeft: 10}} ><Text style={{color: theme.colors.primary, fontWeight: 'bold'}}>Sign up</Text></Pressable>
                             </View>
                         </View>
                     </View>

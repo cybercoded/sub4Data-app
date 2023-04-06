@@ -22,14 +22,6 @@ export const Dashboard = ({ route, navigation }) => {
 	
 
     useEffect(() => {
-        //Auto loggin account for dom use
-        storeData('isLoggedIn', true)
-
-        getData('isLoggedIn').then((res) => {
-            if (!res) {
-                navigation.navigate('Signin')
-            }
-        });
 		
         getData('basicData').then((res) => {
             setProfileData(res)
@@ -72,7 +64,11 @@ export const Dashboard = ({ route, navigation }) => {
                     color: theme.colors.primary,
                     onPress: () => setmenuModal(!menuModal),
                 }}
-                rightComponent={{ icon: 'home', color: theme.colors.primary }}
+                rightComponent={{ 
+                    icon: 'settings', 
+                    color: theme.colors.primary, 
+                    onPress: () => navigation.navigate('CreatePin')
+                }}
             />
 
             <ScrollView style={{ backgroundColor: '#f1f1f1', padding: 10 }}>
@@ -315,6 +311,8 @@ export const Dashboard = ({ route, navigation }) => {
 				isVisible={bottomModal.visible}
 				modalProps={{
 					visible: bottomModal.visible,
+                    animationType: 'fade',
+                    transparent: true,
 				}}
 			>
                 <TouchableOpacity
@@ -336,7 +334,7 @@ export const Dashboard = ({ route, navigation }) => {
                                     	{dummies[bottomModal.content].labels.header}
 									</Text>
                                 </Text>
-                                <Text>{dummies[bottomModal.content].labels.subHeader}</Text>
+                                <Text>{dummies[bottomModal.content].labels?.subHeader}</Text>
                             </View>
                             <View
                                 style={{
@@ -418,7 +416,7 @@ export const Dashboard = ({ route, navigation }) => {
                                         flexDirection: 'row',
 										alignItems: 'center',
                                         borderBottomWidth: 1,
-                                        borderBottomColor: theme.colors.dim,
+                                        borderBottomColor: theme.colors.dimmer,
                                     }}
                                     onPress={() => {
                                         navigation.navigate(list.page, {

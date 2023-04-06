@@ -14,13 +14,15 @@ import {
   getData,
   Loader,
   LOCAL_API,
+  ScrollViewHeader,
   storeData,
   styles,
   theme,
 } from "../components/global";
-import { Button, Card, Icon, Input } from "react-native-elements";
+import { Button, ButtonGroup, Card, Icon, Input, ListItem } from "react-native-elements";
 import { dummies } from "../components/dummies";
 import { Context } from "../components/userContext";
+import indexOf from "lodash/indexOf";
 
 export const Data = ({ route, navigation }) => {
   const { network, service_code } = route.params;
@@ -59,115 +61,69 @@ export const Data = ({ route, navigation }) => {
       
   }, [JSON.stringify(valueState.basicData)]);
 
+  const buttons = mainOptions?.map(list => (
+    <Text>{list.sub_service_name}</Text>
+  ));
   
   return (
-    <View style={styles.centerContainer}>      
-      <View style={{ marginVertical: 20, alignItems: "center" }}>
-        <Image 
-          style={{ height: 100, width: 100 }} 
-          source={dummies.images.networks[network]} 
+    <View style={styles.container}>
+      <Loader
+          submittion={() => changeOption(buttonChange)}
+          props={valueState.loader}
+          handler={() => valueDispatch({loader: {...valueState.loader, visible: false}})}
+      /> 
+     <View style={{flex: 2}}>        
+        <ScrollViewHeader
+            image={dummies.images.networks[network]}
+            title={`Purchase ${network.toUpperCase()} Data`}
+            subTitle={`Wallet Balance = ${valueState.basicData?.balance}`}
         />
-        <Text style={{ marginVertical: 10}}>
-          <Text style={{fontWeight: 'bold'}}>{network.toUpperCase()} Airtime VTU</Text>
-        </Text>
-        <Text style={{ fontWeight: 'bold' }}>Wallet Balance = 0.0</Text>
       </View>
-        <ScrollView style={{width: '100%'}}>
-          <View style={{ margin: 0, marginBottom: 20 }}>
-            <View
-                style={{
-                  flex: 1,
-                  flexDirection: "row",
-                  justifyContent: "space-around",
-                  flexWrap: "wrap",
-                  justifyContent: 'center'
-                }}
-              >{ mainOptions?.map(list => (
-                  <View
-                    key={list.sub_service_id}
-                    style={[styles.menuListStyle, { 
-                      borderRadius: 5,
-                      borderWidth: 1,
-                      justifyContent: 'center',
-                      margin: 5,
-                      paddingVertical: 10,
-                      borderColor: theme.colors.gray,
-                      backgroundColor:
-                        theme.colors[
-                          buttonChange == list.sub_service_code
-                            ? "primary"
-                            : 'dim'
-                        ],
-                    }]}
-                  >
-                    <TouchableOpacity
-                      onPress={() => {
-                        setbuttonChange(list.sub_service_code);
-                        changeOption(list.sub_service_code);
-                      }}
-                    >
-                      <Text style={{ fontWeight: buttonChange == list.sub_service_code ? 'bold' : 'normal'}}>
-                        <Text style={{color: buttonChange == list.sub_service_code && "#fff"}}>
-                          {list.sub_service_name}
-                        </Text>
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                ))}
-            </View>
-          </View>
-        
-          {dataOptions?.map((list) => (
-            <TouchableOpacity
-              key={list.available_service_id}
-              onPress={() =>
+      <View
+          style={{
+            flex: 1,
+            flexDirection: "row",
+            justifyContent: "space-around",
+            flexWrap: "wrap",
+            justifyContent: 'center'
+          }}
+        >
+          <ButtonGroup
+              containerStyle={{height: 50, marginHorizontal: 0, width: '100%'}} 
+              buttons={buttons}
+              onPress={(value) => {
+                setbuttonChange(mainOptions[value]['sub_service_code']);
+                changeOption(mainOptions[value]['sub_service_code']);
+              }}
+              selectedIndex={indexOf(mainOptions.map(list => list.sub_service_code), buttonChange)}
+          />
+      </View>
+      <View style={{flex: 4, width: '100%' }}>
+        <ScrollView>
+          {dataOptions?.map((item, index) => (
+
+            <ListItem
+              key={index }
+              Component={TouchableOpacity}
+              bottomDivider={true}
+              onPress={() => 
                 navigation.navigate("BuyData", {
                   network: network,
-                  product_code: list.product_code,
-                  description: list.available_service_description,
-                  amount: list.available_service_default_price,
+                  product_code: item.product_code,
+                  description: item.available_service_description,
+                  amount: item.available_service_default_price,
                 })
               }
             >
-              <View
-                style={{
-                  paddingHorizontal: 20,
-                  borderRadius: 5,
-                  borderWidth: 0,
-                  backgroundColor: theme.colors.dimmer,
-                  paddingVertical: 15,
-                  marginHorizontal: 0,
-                  flex: 1,
-                  flexDirection: "row",
-                  marginBottom: 5,
-                  justifyContent: "space-between",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <View style={{ flex: 1 }}>
-                  <Text>{list.available_service_name}</Text>
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text numberOfLines={2}>
-                    {list.available_service_description}
-                  </Text>
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={{ color: theme.colors.primary }}>
-                    <Text style={{fontWeight: 'bold'}}>NGN {list.available_service_default_price}</Text>
-                  </Text>
-                </View>
-              </View>
-            </TouchableOpacity>
-          ))}
-
-          <Loader
-            submittion={() => changeOption(buttonChange)}
-            props={valueState.loader}
-            handler={() => valueDispatch({loader: {...valueState.loader, visible: false}})}
-          />
-        </ScrollView>
+              <ListItem.Content>
+                  <ListItem.Title>{item.available_service_name}</ListItem.Title>
+                  <ListItem.Subtitle>{item.available_service_description}</ListItem.Subtitle>
+              </ListItem.Content>
+              <ListItem.Chevron size={40}/>
+            </ListItem>
+          ))} 
+        </ScrollView>         
       </View>
+    </View>
   );
 };

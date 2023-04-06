@@ -1,47 +1,57 @@
-import { View, Text } from 'react-native'
+import { View, Text, TouchableHighlight, TouchableOpacity } from 'react-native'
 import React from 'react'
-import { Button, Icon, Input } from 'react-native-elements';
-import { styles, theme } from '../components/global';
+import { Avatar, Button, Icon, Input, ListItem } from 'react-native-elements';
+import { API, Loader, storeData, styles, theme } from '../components/global';
+import { Formik } from 'formik';
+import * as yup from "yup";
+import { Context } from '../components/userContext';
+import { dummies } from '../components/dummies';
+import delay from 'lodash/delay';
 
 export const Profile = ({navigation}) => {
-  return (
-    <View style={styles.centerContainer}>
-        <View style={{width: '100%'}}>
-            <View style={{alignItems: 'flex-start', marginBottom: 15}}>
-                <View style={{flex: 1, flexDirection: 'row', marginBottom: 10}}>
-                    <Icon name="account-circle" size={20} color={theme.colors.gray} />
-                    <Text style={{fontSize: 700, marginStart: 10, color: theme.colors.gray}}>Username:</Text>
-                </View>
-                <Input value='kunley247' disabled={true} inputContainerStyle={styles.input} containerStyle={{paddingHorizontal: 0}} inputStyle={{outline: 0}} />
-            </View>
 
-            <View style={{alignItems: 'flex-start', marginBottom: 15}}>
-                <View style={{flex: 1, flexDirection: 'row', marginBottom: 10}}>
-                    <Icon name="account-circle" size={20} color={theme.colors.gray} />
-                    <Text style={{fontSize: 700, marginStart: 10, color: theme.colors.gray}}>Fullname:</Text>
-                </View>
-                <Input value='Oluwadare Tomiwa Kunle' inputContainerStyle={styles.input} containerStyle={{paddingHorizontal: 0}} inputStyle={{outline: 0}} />
-            </View>
+    const {valueState, valueDispatch} = React.useContext(Context);
 
-            <View style={{alignItems: 'flex-start', marginBottom: 15}}>
-                <View style={{flex: 1, flexDirection: 'row', marginBottom: 10}}>
-                    <Icon name="account-circle" size={20} color={theme.colors.gray} />
-                    <Text style={{fontSize: 700, marginStart: 10, color: theme.colors.gray}}>Email</Text>
-                </View>
-                <Input value='cafeat9ja@gmail.com' inputContainerStyle={styles.input} containerStyle={{paddingHorizontal: 0}} inputStyle={{outline: 0}} />
-            </View>
+    const settingList = [
+        {
+            icon: 'account-circle', 
+            title: 'Basic Information', 
+            subtitle: 'Manage and update your personal information',
+            page: 'UpdateProfile',
+        },
+        {
+            icon: 'account-circle', 
+            title: 'Basic Information', 
+            subtitle: 'Manage and update your personal information',
+            page: 'UpdateProfile',
+        },
+        {
+            icon: 'account-circle', 
+            title: 'Basic Information', 
+            subtitle: 'Manage and update your personal information',
+            page: 'UpdateProfile',
+        },
+    ]
 
-            <View style={{alignItems: 'flex-start', marginBottom: 15}}>
-                <View style={{flex: 1, flexDirection: 'row', marginBottom: 10}}>
-                    <Icon name="account-circle" size={20} color={theme.colors.gray} />
-                    <Text style={{fontSize: 700, marginStart: 10, color: theme.colors.gray}}>Phone:</Text>
-                </View>
-                <Input value='09036989565' inputContainerStyle={styles.input} containerStyle={{paddingHorizontal: 0}} inputStyle={{outline: 0}} />
+    return (
+        <View style={styles.container}>
+            <View style={{flex: 1, width: '100%'}}>
+                {  settingList.map((item, i) => (
+                    <ListItem
+                        key={i}
+                        Component={TouchableOpacity}
+                        bottomDivider={true}
+                        onPress={() => navigation.navigate(item.page)}
+                    >
+                        <Icon name={item.icon} type="material-community" size={50} color="grey" />
+                        <ListItem.Content>
+                            <ListItem.Title>{item.title}</ListItem.Title>
+                            <ListItem.Subtitle>{item.subtitle}</ListItem.Subtitle>
+                        </ListItem.Content>
+                        <ListItem.Chevron size={40}/>
+                    </ListItem>
+                )) }
             </View>
-
-            <Button title='Proceed' buttonStyle={styles.button} containerStyle={{marginVertical: 20}}/>
-            
         </View>
-    </View>
-  )
+    )
 };

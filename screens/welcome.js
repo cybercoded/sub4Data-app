@@ -13,13 +13,14 @@ import {
 import { BottomSheet, Button, Icon, Input, Text } from "react-native-elements";
 import { dummies } from "../components/dummies";
 import { Context } from "../components/userContext";
+import { clearData } from "../components/global";
 
 export const Welcome = ({ navigation }) => {
 
   const { valueState, valueDispatch } = React.useContext(Context);
 
   const [IPConfigurationValue, setIPConfigurationValue] = useState('http://192.168.70.102/');
-  const [IPConfigurationModal, setIPConfigurationModal] = useState(false);
+  const [IPConfigurationModal, setIPConfigurationModal] = useState(true);
   const [sliders, setSliders] = useState({
     1: true,
     2: false,
@@ -28,6 +29,26 @@ export const Welcome = ({ navigation }) => {
   });
 
   const [currentSlide, setCurrentSlide] = useState(1);
+
+  const redirector = () => {
+    if (valueState.basicData) {
+      if( valueState.basicData.pinCode.length === 4 && valueState.basicData.isLoggedIn == true ) {
+        navigation.navigate('VerifyPin', {landingPage: 'Dashboard'});
+        return;
+      }else if( valueState.basicData.pinCode.length === 4 && valueState.basicData.isLoggedIn == false ) {
+        navigation.navigate('Signin');
+        return;
+      }else if( valueState.basicData?.pinCode.length === 0 ) {
+        navigation.navigate('Signin');
+      }
+    }
+  };
+
+  React.useEffect(() => {
+
+    redirector();
+
+  }, [valueState.basicData]);
 
   const navSlides = (action, goToSlide) => {
     let calculation = goToSlide
@@ -91,20 +112,20 @@ export const Welcome = ({ navigation }) => {
               </TouchableOpacity>
             ))}
           </View>
-          <View style={{flex: 1}}>
-            {currentSlide > 1 && (
-              <Button
-                title="Prev"
-                type="clear"
-                buttonStyle={styles.button}
-                onPress={() => navSlides("prev")}
-              />
-            )}
-          </View>
         </View>
       </View>
         
-      <View style={{flex: 1}}>
+      <View style={{flex: 2}}>
+        {currentSlide > 1 && (
+          <View style={{flex: 1}}>
+            <Button
+              title="Prev"
+              type="clear"
+              buttonStyle={styles.button}
+              onPress={() => navSlides("prev")}
+            />
+          </View>
+        )}
         {currentSlide < Object.values(sliders).length ? (
           <Button
             title="Next"

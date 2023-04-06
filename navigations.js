@@ -17,27 +17,35 @@ import { Logout } from "./screens/logOut";
 import { Welcome } from "./screens/welcome";
 import { TransacHistory } from "./screens/transactionHistory";
 import { BankTransfer } from "./screens/bankTransfer";
-import { getData, theme } from "./components/global";
-import { Context } from "./components/userContext";
+import { getData, storeData, theme } from "./components/global";
+import { Context, initialValues } from "./components/userContext";
+import { VerifyPin } from "./screens/verifyPin";
+import { UpdateProfile } from "./screens/updateProfile";
 
 export const Navigations = () => {
     const Stack = createNativeStackNavigator();
-    const [dataProfile, setDataProfile] = React.useState([])
+    const [basicData, setBasicData] = React.useState([]);
+    const { valueState, valueDispatch } = React.useContext(Context);
+
     React.useEffect(() => {
       
       getData('basicData').then((res) => {
-        setDataProfile(res);
+        setBasicData(res);
+
+        storeData('loader', initialValues.loader);
+
+        valueDispatch({ basicData: res });
       });
-    }, [dataProfile.userId] );
+    }, [valueState.userId] );
     
-    if(!dataProfile.userId) {
+    /* if(!basicData.userId) {
       return null;
-    }
+    } */
     
     return (
       
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Registration"
+        <Stack.Navigator initialRouteName="Welcome"
           screenOptions={{
             headerStyle: {backgroundColor: theme.colors.primary}
           }}  
@@ -45,9 +53,14 @@ export const Navigations = () => {
           
           <Stack.Screen
             name="CreatePin"
-            options={{ title: "Transaction PIN" }}
+            options={{ title: "Create Transaction PIN" }}
             component={CreatePin}
-            initialParams={{ type: "create", userId: dataProfile.userId}}
+          />
+
+          <Stack.Screen
+            name="VerifyPin"
+            options={{ title: "Transaction PIN Verification" }}
+            component={VerifyPin}
           />
           
           <Stack.Screen
@@ -103,7 +116,11 @@ export const Navigations = () => {
             name="Profile"
             options={{ title: "Profile settings" }}
             component={Profile}
-            initialParams={{ userId: 1 }}
+          />
+          <Stack.Screen
+            name="UpdateProfile"
+            options={{ title: "Update profile" }}
+            component={UpdateProfile}
           />
           <Stack.Screen
             name="Service"

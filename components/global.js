@@ -423,7 +423,7 @@ export const Loader = ({ props, handler, submittion }) => {
 
 export const ScrollViewHeader = (props) => {
 	return (
-		<Card containerStyle={{borderWidth: 0, elevation: 0}}>
+		<Card containerStyle={{borderWidth: 0, elevation: 0, backgroundColor: 'transparent'}}>
 			<Card.Image
 				style={{width: '100%',height:100}}
 				resizeMode="contain"
@@ -444,6 +444,7 @@ export const styles = StyleSheet.create({
 		paddingVertical: 50,
 		paddingHorizontal: 20,
 		width: '100%',
+		backgroundColor: theme.colors.white,
 	},
 	menuListStyle: {
 		flexBasis: '40%',
@@ -468,6 +469,7 @@ export const styles = StyleSheet.create({
 		flex: 1,
 		flexDirection: 'row',
 		justifyContent: 'space-between',
+		alignItems: 'center',
 	},
 
 	dots: {
@@ -553,7 +555,7 @@ export const styles = StyleSheet.create({
 	bottomModalCenteredView: {
 		flex: 1,
 		justifyContent: 'flex-end',
-		backgroundColor: 'rgba(0, 0, 0, 0.2)',
+		backgroundColor: 'rgba(0.5, 0.25, 0, 0.2)',
 	},
 	bottomModalView: {
 		alignItems: 'center',
@@ -565,6 +567,7 @@ export const styles = StyleSheet.create({
 		shadowOpacity: 0.25,
 		shadowRadius: 4,
 		elevation: 5,
+		backgroundColor: 'rgba(0, 0, 0, 0.2)',
 	},
 	menuModalCenteredView: {
 		flex: 1,

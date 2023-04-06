@@ -160,6 +160,13 @@ export const dummies = {
       color: theme.colors.primary,
       actions: false,
     },
+    hide: {
+      visible: false,
+      icon: "loader",
+      text: "Please wait",
+      color: theme.colors.primary,
+      actions: false,
+    },
   },
 
   networks: {
@@ -315,6 +322,7 @@ export const dummies = {
       glo: require('../assets/glo-img.jpg'),
       '9mobile': require('../assets/9mobile-img.jpg'),
       airtel: require('../assets/airtel-img.jpg'),
+      icon: require('../assets/icon.png'),
     }
   }
 };

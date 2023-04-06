@@ -7,17 +7,8 @@ import { ThemeProvider } from 'react-native-elements'
 import { Navigations } from './navigations'
 
 export default function App() {
-    const [values, dispatch] = React.useReducer(reducer, initialValues)
-    const autoRender = () => {
-        storeData('loader', initialValues.loader)
-        getData('basicData').then((data) => {
-            dispatch({ basicData: data })
-        })
-    }
-    React.useEffect(() => {
-        autoRender()
-    }, [])
-
+    const [values, dispatch] = React.useReducer(reducer, initialValues);
+    
     return (
         <View style={{ flex: 1 }}>
             <StatusBar style="auto" />

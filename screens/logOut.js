@@ -35,7 +35,6 @@ export const Logout = ({navigation}) => {
                     loader: {...dummies.modalProcess.hide}
                 }) }
             />
-            <Text>Login out user.......</Text>
         </View>
     );
 };

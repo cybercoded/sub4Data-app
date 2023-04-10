@@ -20,8 +20,8 @@ export const Signin = ({navigation}) => {
             <View style={{flex: 1, width: '100%'}}>
 
                 <ScrollViewHeader
-                    image={dummies.images.networks.icon}
-                    title='Register with sub4Data'
+                    image={dummies.images.icon}
+                    title='Sign in to your sub4Data account'
                 />
 
                 <Formik

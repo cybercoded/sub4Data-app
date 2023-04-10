@@ -32,7 +32,11 @@ export const VerifyPin = ({route, navigation}) => {
                     setPinCode([]);
                     delay(() => {
                         valueDispatch({loader: {...dummies.modalProcess.hide}});
-                        navigation.navigate(landingPage, {isPinVerified: true});
+                        navigation.navigate({
+                            name: landingPage,
+                            params: { isPinVerified: true },
+                            merge: true,
+                          });
                     }, 1000);
                 }else {
                     valueDispatch({loader: {...dummies.modalProcess.error, text: 'Incorrect PIN, please try again'}});
@@ -40,7 +44,6 @@ export const VerifyPin = ({route, navigation}) => {
             }).catch(error => {
                 valueDispatch({loader: {...dummies.modalProcess.error, text: error}});
             });
-            return;
         }
     }    
     

@@ -54,7 +54,7 @@ export const API = axios.create();
 API.interceptors.request.use(
 	async (config) => {
 		config.baseURL = JSON.parse(await AsyncStorage.getItem('localURL'))+'/tommytop/handle/';
-
+		
 		return config;
 	},
 
@@ -400,7 +400,8 @@ export const Loader = ({ props, handler, submittion }) => {
 			) : (
 				<Icon name={props.icon} size={60} color={props.color} />
 			)}
-			<Dialog.Title title={props.text} titleStyle={{textAlign: 'center', color: props.color}} />
+			<Dialog.Title title={props.title} titleStyle={{textAlign: 'center', color: props.color}} />
+			<Text style={{textAlign: 'center'}}>{props.text}</Text>
 			{props.actions && (
 				<Dialog.Actions>
 					{submittion && (
@@ -422,16 +423,17 @@ export const Loader = ({ props, handler, submittion }) => {
 };
 
 export const ScrollViewHeader = (props) => {
+	
 	return (
 		<Card containerStyle={{borderWidth: 0, elevation: 0, backgroundColor: 'transparent'}}>
 			<Card.Image
-				style={{width: '100%',height:100}}
+				style={{width: '100%',height: 80}}
 				resizeMode="contain"
 				source={props.image} 
 				PlaceholderContent={<ActivityIndicator />}
 			/>
 				<Card.Title>{props.title}</Card.Title>
-				<Text>{props.subTitle}</Text>
+				<Text style={{textAlign: 'center'}}>{props.subTitle}</Text>
 		</Card>
 	);
 };
@@ -501,6 +503,12 @@ export const styles = StyleSheet.create({
 		borderRadius: 10,
 		borderBottomWidth: 0,
 		backgroundColor: theme.colors.dimmer,
+	},
+
+	ScrollViewHeaderImgae: {
+		height: 100,
+		width: 100,
+		resizeMode: 'contain'
 	},
 
 	button: {

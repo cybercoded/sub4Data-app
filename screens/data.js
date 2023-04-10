@@ -25,39 +25,28 @@ import { Context } from "../components/userContext";
 import indexOf from "lodash/indexOf";
 
 export const Data = ({ route, navigation }) => {
-  const { network, service_code } = route.params;
+  const { sub_service_code, sub_service_name } = route.params;
   const [buttonChange, setbuttonChange] = useState(null);
   const [dataOptions, setDataOptions] = useState([]);
   const [mainOptions, setMainOptions] = useState([]);
 
   const {valueState, valueDispatch} = React.useContext(Context);
 
-  const changeOption = (code) => {
-    valueDispatch({loader: {...valueState.loader, visible: true}});
-    if (!code) {
-      valueDispatch({loader: {...dummies.modalProcess.error, text: 'This service is not available at the moment, please try again later.'}});
-    }
-    API.post(`get-sub-services.php?userId=${valueState.basicData?.userId}&service=others/get_available_services.php`, {service_code: service_code, sub_service_code: code})
-    .then((res) => {
-      storeData("available-services", res.data.data);
 
+  useEffect(() => {
+    valueDispatch({loader: {...dummies.modalProcess.loading}});
+    API.post(`get-sub-services.php?userId=${valueState.basicData?.userId}&service=others/get_available_services.php`, {
+      service_code: 'sme_data_share', 
+      sub_service_code: sub_service_code
+    })
+    .then((res) => {
       setDataOptions(res.data.data);
-      valueDispatch({loader: {...valueState.loader, visible: false}});
+      valueDispatch({loader: {...dummies.modalProcess.hide}});
       
     }).catch(error => {
       console.log(error)
-      valueDispatch({loader: {...valueState.loader, text: error.message, icon: 'highlight-off'}});
+      valueDispatch({loader: {...dummies.modalProcess.error, text: error.message}});
     })
-  };  
-
-  useEffect(() => {
-    getData(service_code).then((res) => {
-      const filteredMainList = res.filter((item) => item.sub_service_code.includes(network))
-
-      setMainOptions(filteredMainList);
-      setbuttonChange(filteredMainList[0]?.sub_service_code);
-      changeOption(filteredMainList[0]?.sub_service_code);
-    });
       
   }, [JSON.stringify(valueState.basicData)]);
 
@@ -70,12 +59,12 @@ export const Data = ({ route, navigation }) => {
       <Loader
           submittion={() => changeOption(buttonChange)}
           props={valueState.loader}
-          handler={() => valueDispatch({loader: {...valueState.loader, visible: false}})}
+          handler={() => valueDispatch({loader: {...dummies.modalProcess.hide}})}
       /> 
      <View style={{flex: 2}}>        
         <ScrollViewHeader
-            image={dummies.images.networks[network]}
-            title={`Purchase ${network.toUpperCase()} Data`}
+            image={dummies.images[sub_service_code]}
+            title={`Purchase ${sub_service_name} Data`}
             subTitle={`Wallet Balance = ${valueState.basicData?.balance}`}
         />
       </View>
@@ -88,15 +77,6 @@ export const Data = ({ route, navigation }) => {
             justifyContent: 'center'
           }}
         >
-          <ButtonGroup
-              containerStyle={{height: 50, marginHorizontal: 0, width: '100%'}} 
-              buttons={buttons}
-              onPress={(value) => {
-                setbuttonChange(mainOptions[value]['sub_service_code']);
-                changeOption(mainOptions[value]['sub_service_code']);
-              }}
-              selectedIndex={indexOf(mainOptions.map(list => list.sub_service_code), buttonChange)}
-          />
       </View>
       <View style={{flex: 4, width: '100%' }}>
         <ScrollView>

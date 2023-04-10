@@ -1,6 +1,20 @@
 import { BASE_URL, theme } from "./global";
 
 export const dummies = {
+  images: {
+    shared_data_mtn: require('../assets/shared_data_mtn.png'),
+    glo_corporate_data: require('../assets/glo_corporate_data.jpg'),
+    shared_data_9mobile: require('../assets/shared_data_9mobile.jpg'),
+    shared_data_airtel: require('../assets/shared_data_airtel.jpeg'),
+    mtn_corporate_data: require('../assets/mtn_corporate_data.png'),
+
+    prepaid_mtn: require('../assets/prepaid_mtn.png'),
+    prepaid_airtel: require('../assets/prepaid_airtel.jpg'),
+    prepaid_glo: require('../assets/prepaid_glo.jpg'),
+    prepaid_9mobile: require('../assets/prepaid_9mobile.png'),
+    icon: require('../assets/icon.png')
+  },
+
   menus: [
     { id: 1, icon: "home", text: "Home", page: "Dashboard" },
     { id: 2, icon: "person-outline", text: "My Profile", page: "Profile" },
@@ -90,26 +104,26 @@ export const dummies = {
     {
       id: 1,
       isCurrent: true,
-      image: require('../assets/mtn-img.jpg'),
-      text: "Direct Bank",
+      image: require('../assets/laptop.png'),
+      text: "We use cutting-edge technology to run our services. Our delivery and wallet funding is automated, any service purchased will get delivered to you instantly.",
     },
     {
       id: 2,
       isCurrent: false,
-      image: require('../assets/airtel-img.jpg'),
-      text: "Bank Transfer",
+      image: require('../assets/icon-phone.png'),
+      text: "Our platform is a fully optimized platform for reliability and dependability. You get 100% value for any transaction you carry with us.",
     },
     {
       id: 3,
       isCurrent: false,
-      image: require('../assets/glo-img.jpg'),
-      text: "USSD Transfer",
+      image: require('../assets/customer-support.png'),
+      text: "Our customer service is just a click away, don't hesitate to consult us on anything as the system is 90% automated. Thus, all transactions are attended to within 5-15mins.",
     },
     {
       id: 4,
       isCurrent: false,
-      image: require('../assets/9mobile-img.jpg'),
-      text: "Debit Card",
+      image: require('../assets/security.png'),
+      text: "Your e-wallet is the safest, easiest and fastest means of carrying out transactions with us. Your funds are secured with your e-wallet PIN and can be kept for you for as long as you want.",
     },
   ],
 
@@ -143,6 +157,7 @@ export const dummies = {
       visible: true,
       icon: "check-circle-outline",
       text: "Successful",
+      title: 'Successful',
       actions: false,
       color: theme.colors.primary,
     },
@@ -151,12 +166,14 @@ export const dummies = {
       icon: "highlight-off",
       text: "Error",
       actions: true,
+      title: 'Error',
       color: "red",
     },
     loading: {
       visible: true,
       icon: "loader",
       text: "Please wait",
+      title: 'Processing',
       color: theme.colors.primary,
       actions: false,
     },
@@ -164,6 +181,7 @@ export const dummies = {
       visible: false,
       icon: "loader",
       text: "Please wait",
+      title: 'Closed',
       color: theme.colors.primary,
       actions: false,
     },
@@ -177,26 +195,22 @@ export const dummies = {
       {
         id: 1,
         icon: false,
-        network: "mtn",
-        iconName: require('../assets/mtn-img.jpg'),
+        network: "mtn"
       },
       {
         id: 2,
         icon: false,
-        network: "airtel",
-        iconName: require('../assets/airtel-img.jpg'),
+        network: "airtel"
       },
       {
         id: 3,
         icon: false,
-        network: "glo",
-        iconName: require('../assets/glo-img.jpg'),
+        network: "glo"
       },
       {
         id: 4,
         icon: false,
         network: "9mobile",
-        iconName: require('../assets/9mobile-img.jpg'),
       },
     ],
   },
@@ -210,58 +224,50 @@ export const dummies = {
         id: 1,
         icon: false,
         service: "ikedc",
-        text: "Ikeja Electric Paymentt - IKEDC",
-        iconName: `${BASE_URL}img/ikedc-img.jpg`,
+        text: "Ikeja Electric Paymentt - IKEDC"
       },
       {
         id: 2,
         icon: false,
         service: "ekedc",
-        text: "Eko Electric Payment - EKEDC",
-        iconName: `${BASE_URL}img/ekedc-img.jpg`,
+        text: "Eko Electric Payment - EKEDC"
       },
       {
         id: 3,
         icon: false,
-        service: "aedc",
-        text: "Abuja Electricity Distibution Company - AEDC",
-        iconName: `${BASE_URL}img/aedc-img.jpg`,
+        service: "abuja_distribution_company",
+        text: "Abuja Electricity Distibution Company - AEDC"
       },
       {
         id: 4,
         icon: false,
-        service: "kedco",
-        text: "Kano Electric - KEDCO",
-        iconName: `${BASE_URL}img/kedco-img.jpg`,
+        service: "kano_distribution_company",
+        text: "Kano Electric - KEDCO"
       },
       {
         id: 5,
         icon: false,
         service: "phed",
-        text: "Port Harcourt Electric - PHED",
-        iconName: `${BASE_URL}img/phed-img.jpg`,
+        text: "Port Harcourt Electric - PHED"
       },
       {
         id: 6,
         icon: false,
-        service: "jedc",
-        text: "Jos Electric - JED",
-        iconName: `${BASE_URL}img/jedc-img.jpg`,
+        service: "jos_distribution_company",
+        text: "Jos Electric - JED"
       },
       {
         id: 7,
         icon: false,
-        service: "kaed",
-        text: "Kaduna Electric - KAEDCO",
-        iconName: `${BASE_URL}img/kaed-img.jpg`,
+        service: "kaduna_distribution_company",
+        text: "Kaduna Electric - KAEDCO"
       },
       {
         id: 8,
         icon: false,
-        service: "ibed",
+        service: "ibadan_distribution_company",
         text: "Ibadan Electricity Distibution Company - IBEDC",
-        iconName: `${BASE_URL}img/ibed-img.jpg`,
-      },
+      }
     ],
   },
 
@@ -313,16 +319,6 @@ export const dummies = {
       { id: 8, description: "500MB CD", price: 135, duration: "1 Month" },
       { id: 9, description: "500MB CD", price: 135, duration: "1 Month" },
       { id: 10, description: "500MB CD", price: 135, duration: "1 Month" },
-    ],
-  },
-
-  images: {
-    networks: {
-      mtn: require('../assets/mtn-img.jpg'),
-      glo: require('../assets/glo-img.jpg'),
-      '9mobile': require('../assets/9mobile-img.jpg'),
-      airtel: require('../assets/airtel-img.jpg'),
-      icon: require('../assets/icon.png'),
-    }
+    ]
   }
 };

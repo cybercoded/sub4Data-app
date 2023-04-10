@@ -11,25 +11,20 @@ import {
 import { Button, ButtonGroup, Input, Switch } from "react-native-elements";
 import { Formik } from "formik";
 import * as yup from "yup";
-import { Context, LoaderView } from "../components/userContext";
-import debounce from "lodash/debounce";
+import { Context } from "../components/userContext";
 import { dummies } from "../components/dummies";
 import delay from "lodash/delay";
 
 export const Airtime = ({ route, navigation }) => {
-  const { isPinVerified, network } = route.params;
+  const { isPinVerified, sub_service_code, sub_service_name } = route.params;
   const [value, setValue] = React.useState(false);
-  const [passwordVisibility, setPasswordVisibility] = React.useState(true);
-  const [isReferred, setIsReferred] = React.useState(false);
   const {valueState, valueDispatch} = React.useContext(Context);
   const formRef = React.useRef();
 
   React.useEffect(() => {
 
-    if( isPinVerified === true) {
-      if (formRef.current) {
+    if( isPinVerified === true && formRef.current) {
         formRef.current.handleSubmit()
-      }
     }
 
   }, []);
@@ -40,9 +35,9 @@ export const Airtime = ({ route, navigation }) => {
       <Formik
         innerRef={formRef}
         initialValues={{
-          amount: "100",
-          phone: "09036989565",
-          product_code: `${network}_custom`,
+          amount: "",
+          phone: "",
+          product_code: sub_service_code,
         }}
         validateOnChange={true}
         validationSchema={yup.object().shape({
@@ -83,15 +78,10 @@ export const Airtime = ({ route, navigation }) => {
           values,
         }) => (
           <>
-            <Loader
-              submittion={handleSubmit}
-              handler={() => valueDispatch({loader: {...dummies.modalProcess.hide}})}
-              props={valueState.loader}
-            />
             <View style={{flex: 1}}>
               <ScrollViewHeader
-                  image={dummies.images.networks[network]}
-                  title={`Purchase ${network.toUpperCase()} Data`}
+                  image={dummies.images[sub_service_code]}
+                  title={`Purchase ${sub_service_name} Airtime`}
                   subTitle={`Wallet Balance = ${valueState.basicData?.balance}`}
               />
             </View>
@@ -142,6 +132,12 @@ export const Airtime = ({ route, navigation }) => {
           </>
         )}
       </Formik>
+
+      <Loader
+          submittion={() =>  formRef.current.handleSubmit() }
+          handler={() => valueDispatch({loader: {...dummies.modalProcess.hide}})}
+          props={valueState.loader}
+        />
     </View>
   );
 };

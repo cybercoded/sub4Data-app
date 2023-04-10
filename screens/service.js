@@ -1,67 +1,86 @@
-import { View, Text, TouchableOpacity, Image } from "react-native";
-import React from "react";
-import { Button, Icon, Input } from "react-native-elements";
-import { styles, theme } from "../components/global";
-import { dummies } from "../components/dummies";
+import { View, Text, TouchableOpacity, Image, ScrollView } from 'react-native';
+import React from 'react';
+import { Button, Icon, Input, ListItem } from 'react-native-elements';
+import { API, Loader, ScrollViewHeader, styles, theme } from '../components/global';
+import { dummies } from '../components/dummies';
+import { Context } from '../components/userContext';
+import { TouchableHighlight } from 'react-native';
+import { FlatList } from 'react-native';
+import { includes, isObject } from 'lodash';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export const Service = ({ route, navigation }) => {
-  const { page } = route.params;
+    const {valueState, valueDispatch} = React.useContext(Context);
 
-  return (
-    <View
-      style={{
-        backgroundColor: theme.colors.dim,
-        padding: 20,
-        borderTopStartRadius: 20,
-        borderTopEndRadius: 20,
-      }}
-    >
-      <View>
-        <Text style={{ fontWeight: 'bold', textAlign: "center" }}>
-          {dummies[page].labels.header}
-        </Text>
-        <Text>{dummies[page].labels.subHeader}</Text>
-      </View>
-      <View
-        style={{
-          flex: 1,
-          flexDirection: "row",
-          justifyContent: "space-around",
-          flexWrap: "wrap",
-        }}
-      >
-        {dummies[page]["lists"].map( (list, index) => (
-          <TouchableOpacity
-            key={list.id}
-            style={[styles.menuListStyle, { flex: "40%" }]}
-            onPress={() => {
-                alert(list.iconName)
-              navigation.navigate(dummies[page].lists[index].page, {
-                network: list.network,
-                description: list.text,
-                service: list.service,
-                icon: list.iconName,
-              });
-            }}
-          >
-            {list.icon ? (
-              <Icon
-                color={theme.colors.primary}
-                size={40}
-                name={list.iconName}
-              />
-            ) : (
-              <Image
-                style={{ width: 50, height: 50, borderRadius: 50 }}
-                source={{ uri: list.iconName }}
-              />
-            )}
-            <Text numberOfLines={1} style={{ textAlign: "center" }}>
-              {list.text}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-    </View>
-  );
+    const [availableServices, setAvailableServices] = React.useState([]);
+
+    React.useEffect(() => {
+      
+      valueDispatch({loader: {...dummies.modalProcess.loading, text: 'Fetching available services'}});
+      API.get(`get-sub-services.php?userId=1&service=others/get_services.php`)
+      .then((res) => {
+        if( isObject(res.data) ) {
+          valueDispatch({loader: {...dummies.modalProcess.hide}});
+          setAvailableServices(res.data.data);
+        }
+      })
+      .catch((error) => {
+        valueDispatch({loader: {...dummies.modalProcess.error, text: error}});
+      })
+    }, [])
+    
+
+    return (
+      <>
+        <View style={styles.container}>
+          <View style={{flex: 2}}>
+            <ScrollViewHeader
+                image={dummies.images.networks['mtn']}
+                title='Available services'
+                subTitle='Select from the list of services listed below'
+            />
+          </View>
+
+          <View style={{flex: 4, width: '100%'}}>
+            <SafeAreaView>
+              {
+                <FlatList
+                  data={availableServices.filter((item) => item.service_name.includes('Distribution Company'))}
+                  renderItem={({item, index}) => {
+                    const image = `https://smartrecharge.ng/images/services/${item.main_service_logo}`;
+                    return (
+                      <ListItem
+                          key={index}
+                          Component={TouchableOpacity}
+                          bottomDivider={true}
+                          onPress={() => navigation.navigate('Electricity', {
+                            service_code: item.service_code,
+                            main_service_logo: image,
+                            service_name: item.service_name
+                          }) }
+                      >
+                          <Image 
+                            source={{uri: image}} 
+                            style={{height: 50, width: 50}}
+                          />
+                          <ListItem.Content>
+                              <ListItem.Title>{item.service_name}</ListItem.Title>
+                              <ListItem.Subtitle>{item.main_service_description}</ListItem.Subtitle>
+                          </ListItem.Content>
+                          <ListItem.Chevron size={40}/>
+                      </ListItem>
+                    );
+                  }}
+                />
+              }
+            </SafeAreaView>
+          </View>
+        </View>
+
+        <Loader
+          props={valueState.loader}
+          handler={() => valueDispatch({loader: {...dummies.modalProcess.hide}})}
+        />
+      </>
+    );
 };

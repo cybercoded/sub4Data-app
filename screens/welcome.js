@@ -4,6 +4,7 @@ import {
   ScrollView,
   TouchableOpacity,
   View,
+  Dimensions
 } from "react-native";
 import {
   storeData,
@@ -18,9 +19,11 @@ import { clearData } from "../components/global";
 export const Welcome = ({ navigation }) => {
 
   const { valueState, valueDispatch } = React.useContext(Context);
+  const windowsWidth  = Dimensions.get('window').width;
+
 
   const [IPConfigurationValue, setIPConfigurationValue] = useState('http://192.168.70.102/');
-  const [IPConfigurationModal, setIPConfigurationModal] = useState(true);
+  const [IPConfigurationModal, setIPConfigurationModal] = useState(false);
   const [sliders, setSliders] = useState({
     1: true,
     2: false,
@@ -75,76 +78,78 @@ export const Welcome = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <View style={{ flex: 10}}>
-        <View style={{ flex: 1, alignItems: "center" }}>
-          <ScrollView horizontal={true}>
-            {dummies.welcomePageSliders.map((slider) => (
-              <View
-                key={slider.id}
-                style={{
-                  display: sliders[slider.id] ? "flex" : "none",
-                  flex: 1,
-                  flexDirection: "column",
-                  justifyContent: "center",
-                }}
-              >
-                <View style={{ marginVertical: 20, alignItems: "center" }}>
-                  <Image
-                    style={{ height: 100, width: 100 }}
-                    source={slider.image}
-                  />
-                  <Text style={{ marginVertical: 10}}>
-                    Sign in to your account on Tommytop
-                  </Text>
-                </View>
+      <View style={{ flex: 12, alignItems: 'center'}}>
+        <ScrollView horizontal={true}>
+          {dummies.welcomePageSliders.map((slider) => (
+            <View
+              key={slider.id}
+              style={{
+                display: sliders[slider.id] ? "flex" : "none",
+                flex: 1,
+                flexDirection: "column",
+                justifyContent: "center",
+              }}
+            >
+              <View style={{ marginVertical: 20, alignItems: "center", width: (windowsWidth-50)}}>
+                <Image
+                  style={{ height: 100, width: 100 }}
+                  source={slider.image}
+                />
+                <Text style={{ marginVertical: 10, textAlign: 'center', fontSize: 20, color: theme.colors.dim}}>
+                  {slider.text}
+                </Text>
               </View>
-            ))}
-          </ScrollView>
-          <View style={[styles.rowFlex, { flex: 6, width: 80 }]}>
-            {dummies.welcomePageSliders.map((slider) => (
-              <TouchableOpacity
-                key={slider.id}
-                onPress={() => navSlides("", slider.id)}
-              >
-                <View
-                  style={sliders[slider.id] ? styles.currentDot : styles.dots}
-                ></View>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
+            </View>
+          ))}
+        </ScrollView>          
       </View>
         
-      <View style={{flex: 2}}>
-        {currentSlide > 1 && (
-          <View style={{flex: 1}}>
-            <Button
-              title="Prev"
-              type="clear"
-              buttonStyle={styles.button}
-              onPress={() => navSlides("prev")}
-            />
+      <View style={{flex: 3, alignItems: 'center', justifyContent: 'flex-end'}}>
+        <View style={{flex: 1}}>
+          <View style={[styles.rowFlex, { width: 80 }]}>
+              {dummies.welcomePageSliders.map((slider) => (
+                <TouchableOpacity
+                  key={slider.id}
+                  onPress={() => navSlides("", slider.id)}
+                >
+                  <View
+                    style={sliders[slider.id] ? styles.currentDot : styles.dots}
+                  ></View>
+                </TouchableOpacity>
+              ))}
           </View>
-        )}
-        {currentSlide < Object.values(sliders).length ? (
-          <Button
-            title="Next"
-            type="outline"
-            onPress={() => navSlides("next")}
-            buttonStyle={styles.button}
-            icon={<Icon name="arrow-right" size={30} color={theme.colors.primary} />}
-            iconLeft
-          />
-        ) : (
-          <Button
-            title="Get Started"
-            type="solid"
-            onPress={() => navigation.navigate("Registration")}
-            buttonStyle={styles.button}
-            icon={<Icon name="arrow-right" size={30} color="white" />}
-            iconRight
-          />
-        )}
+        </View>
+        <View style={{flex: 2}}>
+          <View style={{width: windowsWidth-50}}>
+            {currentSlide > 1 && (
+                <Button
+                  title="Prev"
+                  type="clear"
+                  buttonStyle={styles.button}
+                  onPress={() => navSlides("prev")}
+                />
+            )}
+            {currentSlide < Object.values(sliders).length ? (
+                <Button
+                  title="Next"
+                  type="outline"
+                  onPress={() => navSlides("next")}
+                  buttonStyle={styles.button}
+                  icon={<Icon name="arrow-right" size={30} color={theme.colors.primary} />}
+                  iconLeft
+                />
+            ) : (
+              <Button
+                title="Get Started"
+                type="solid"
+                onPress={() => navigation.navigate("Registration")}
+                buttonStyle={styles.button}
+                icon={<Icon name="arrow-right" size={30} color="white" />}
+                iconRight
+              />
+            )}
+          </View>
+        </View>
       </View>
       <BottomSheet
         isVisible={IPConfigurationModal}

@@ -7,7 +7,7 @@ import { Data } from './screens/data';
 import { BuyData } from './screens/buyData';
 import { BuyElectricity } from './screens/buyElectricity';
 import { Profile } from './screens/profile';
-import { Service } from './screens/service';
+import { ElectricityService } from './screens/ElectricityService';
 import { Registration } from './screens/registration';
 import { Signin } from './screens/Signin';
 import { Index } from './screens';
@@ -24,15 +24,17 @@ import { UpdateProfile } from './screens/updateProfile';
 import { Electricity } from './screens/electricity';
 import { AirtimeService } from './screens/airtimeService';
 import { SMEDataService } from './screens/SMEDataService';
+import { CableService } from './screens/CableService';
+import { DirectDataService } from './screens/DirectDataService';
+import { Cable } from './screens/cable';
+import { BuyCable } from './screens/buyCable';
 
 export const Navigations = () => {
     const Stack = createNativeStackNavigator();
-    const [basicData, setBasicData] = React.useState([]);
     const { valueState, valueDispatch } = React.useContext(Context);
 
     React.useEffect(() => {
         getData('basicData').then((res) => {
-            setBasicData(res);
 
             storeData('loader', initialValues.loader);
 
@@ -60,33 +62,66 @@ export const Navigations = () => {
                     name="Data"
                     component={Data}
                     options={{ title: 'Data Options' }}
-                    initialParams={{ network: 'mtn', service_code: 'sme_data_share' }}
+                />
+                <Stack.Screen
+                    name="Cable"
+                    component={Cable}
+                    options={{ title: 'Cable TV Options' }}
+                />
+                <Stack.Screen
+                    name="BuyCable"
+                    component={BuyCable}
+                    options={{ title: 'Purchase Cable TV' }}
                 />
                 <Stack.Screen
                     name="BuyData"
                     options={{ title: 'Buy Data' }}
                     component={BuyData}
-                    initialParams={{
-                        network: 'mtn',
-                        description: '500MB CD',
-                        amount: 'NGN 150',
-                        product_code: 'data_share_1gb'
-                    }}
                 />
-                <Stack.Screen name="BuyElectricity" options={{ title: 'Buy Electricity' }} component={BuyElectricity} />
-                <Stack.Screen name="Electricity" options={{ title: ' Electricity' }} component={Electricity} />
-                <Stack.Screen name="Profile" options={{ title: 'Profile settings' }} component={Profile} />
-                <Stack.Screen name="UpdateProfile" options={{ title: 'Update profile' }} component={UpdateProfile} />
-                <Stack.Screen name="Service" options={{ title: 'Service' }} component={Service} />
+                <Stack.Screen 
+                    name="BuyElectricity" 
+                    options={{ title: 'Buy Electricity' }} 
+                    component={BuyElectricity} 
+                />
+                <Stack.Screen 
+                    name="Electricity" 
+                    options={{ title: ' Electricity' }} 
+                    component={Electricity}
+                />
+                <Stack.Screen 
+                    name="Profile" 
+                    options={{ title: 'Profile settings' }} 
+                    component={Profile}
+                />
+                <Stack.Screen 
+                    name="UpdateProfile" 
+                    options={{ title: 'Update profile' }} 
+                    component={UpdateProfile} 
+                />
+                <Stack.Screen 
+                    name="ElectricityService" 
+                    options={{ title: 'ElectricityService' }} 
+                    component={ElectricityService} 
+                />
                 <Stack.Screen 
                     name="AirtimeService" 
-                    options={{ title: 'Airtime' }} 
+                    options={{ title: 'Airtime Services' }} 
                     component={AirtimeService} 
                 />
                 <Stack.Screen 
                     name="SMEDataService" 
                     options={{ title: 'SME Data Services' }} 
                     component={SMEDataService} 
+                />
+                <Stack.Screen 
+                    name="DirectDataService" 
+                    options={{ title: 'Direct Data Services' }} 
+                    component={DirectDataService} 
+                />
+                <Stack.Screen 
+                    name="CableService"  
+                    options={{ title: 'Cable TV Services' }} 
+                    component={CableService} 
                 />
                 <Stack.Screen
                     name="Registration"

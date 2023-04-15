@@ -8,15 +8,14 @@ import { FlatList } from 'react-native';
 import isObject from 'lodash/isObject';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-export const SMEDataService = ({ route, navigation }) => {
+export const DirectDataService = ({ route, navigation }) => {
     const { valueState, valueDispatch } = React.useContext(Context);
-
     const [availableServices, setAvailableServices] = React.useState([]);
 
     React.useEffect(() => {
         valueDispatch({ loader: { ...dummies.modalProcess.loading, text: 'Fetching available services' } });
         API.post(`get-sub-services.php?userId=1&service=others/get_sub_services.php`, {
-            service_code: 'sme_data_share'
+            service_code: 'data_topup'
         })
         .then((res) => {
             if (isObject(res.data)) {
@@ -30,12 +29,14 @@ export const SMEDataService = ({ route, navigation }) => {
         });
     }, []);
 
+    const serviceImage = {uri: `https://smartrecharge.ng/images/services/baa06877f9cc2305bf6d2fa1e1cf6695f3dba8d8990efc3dfb028a0a3b1510a24941453ca663cef4e722c7aab10c2bed6a9cb4b318542a11e235bb0fac9e7665.png`};
+
     return (
         <>
             <View style={styles.container}>
                 <View style={{ flex: 2 }}>
                     <ScrollViewHeader
-                        image={dummies.images.shared_data_9mobile}
+                        image={serviceImage}
                         title="Available services"
                         subTitle="Select from the list of services listed below"
                     />
@@ -49,7 +50,7 @@ export const SMEDataService = ({ route, navigation }) => {
                                 renderItem={({ item, index }) => {
                                     const image = item.main_service_logo 
                                         ? `https://smartrecharge.ng/images/services/${item.main_service_logo}`
-                                        : dummies.images[item.sub_service_code]
+                                        : dummies.images[item.sub_service_code.replace('direct', 'shared')]
                                     return (
                                         <ListItem
                                             key={index}
@@ -58,7 +59,8 @@ export const SMEDataService = ({ route, navigation }) => {
                                             onPress={() =>
                                                 navigation.navigate('Data', {
                                                     sub_service_code: item.sub_service_code,
-                                                    sub_service_name: item.sub_service_name
+                                                    sub_service_name: item.sub_service_name,
+                                                    serviceImage: serviceImage
                                                 })
                                             }
                                         >

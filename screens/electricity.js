@@ -1,21 +1,17 @@
-import { View } from 'react-native';
+import { View, SafeAreaView } from 'react-native';
 import React from 'react';
 import { API, Loader, ScrollViewHeader, styles } from '../components/global';
 import { Button, Icon, Input } from 'react-native-elements';
 import { Context } from '../components/userContext';
 import { Formik } from 'formik';
 import { dummies } from '../components/dummies';
-import delay from 'lodash';
 import SelectDropdown from 'react-native-select-dropdown';
 import * as yup from 'yup';
-import axios from 'axios';
 
 export const Electricity = ({ route, navigation }) => {
     const { service_code, service_name, main_service_logo, isPinVerified } = route.params;
     const [availableServices, setAvailableServices] = React.useState([]);
     const [availableSubServices, setAvailableSubServices] = React.useState([]);
-    const [currentServices, setCurrentServices] = React.useState(0);
-
     const { valueState, valueDispatch } = React.useContext(Context);
     const formRef = React.useRef();
     const serviceRef = React.useRef({});
@@ -52,28 +48,39 @@ export const Electricity = ({ route, navigation }) => {
 
     return (
         <>
-            <View style={styles.container}>
+            <SafeAreaView style={styles.container}>
                 <View style={{ flex: 2 }}>
                     <ScrollViewHeader
                         image={{ uri: main_service_logo }}
-                        title={`Purchase ${service_name.toUpperCase()}`}
+                        title={service_name}
                         subTitle={`Wallet Balance = ${valueState.basicData?.balance}`}
                     />
                 </View>
-                <View style={{ flex: 3 }}>
+                <View style={{ flex: 4 }}>
                     <Formik
                         innerRef={formRef}
+                        validateOnChange={true}
                         initialValues={{
                             meter_number: '62141331165',
                             task: 'verify',
                             main_service_logo: main_service_logo,
+                            amount: '200'
                         }}
                         validationSchema={yup.object().shape({
                             meter_number: yup
                                 .string()
+                                .label('Card number')
+                                .typeError('Must be only digits')
                                 .required('Enter your your card number')
                                 .min(11, 'Enter 11 digits!')
-                                .max(11, 'Enter 11 digits!')
+                                .max(11, 'Enter 11 digits!'),
+                            amount: yup
+                                .number()
+                                .typeError('Must be only digits')
+                                .label('Amount to purchase')
+                                .required('Enter amount to purchase')
+                                .min(200, 'Enter N200 and above!')
+                                .max(2000, 'Enter N20,000 and above!')
                         })}
                         onSubmit={(values) => {
                             navigation.navigate('BuyElectricity', values);
@@ -88,6 +95,7 @@ export const Electricity = ({ route, navigation }) => {
                                     value={values.meter_number}
                                     onChangeText={handleChange('meter_number')}
                                     onBlur={handleBlur('meter_number')}
+                                    keyboardType='number-pad'
                                     errorMessage={errors.meter_number && touched.meter_number && errors.meter_number}
                                 />
 
@@ -107,10 +115,21 @@ export const Electricity = ({ route, navigation }) => {
                                     data={availableSubServices.map((item) => item.available_service_name)}
                                     onSelect={(selectedItem, index) => {
                                         setFieldValue('product_code', availableSubServices[index]['available_service_system_name']);
-                                        setFieldValue('available_service_logo', availableSubServices[index]['available_service_logo']);
+                                        setFieldValue('available_service_logo', 'https://smartrecharge.ng/images/services/'+availableSubServices[index]['available_service_logo']);
                                     }}
-                                    buttonStyle={[styles.button, { height: 'auto', textAlign: 'center' }]}
+                                    buttonStyle={[styles.button, { height: 'auto', marginBottom: 20 }]}
                                     renderDropdownIcon={() => <Icon name="menu-down" type="material-community" size={35} color="grey" />}
+                                />
+
+                                <Input
+                                    placeholder="Amount to purchase"
+                                    inputContainerStyle={styles.input}
+                                    containerStyle={{ paddingHorizontal: 0 }}
+                                    value={values.amount}
+                                    keyboardType='number-pad'
+                                    onChangeText={handleChange('amount')}
+                                    onBlur={handleBlur('amount')}
+                                    errorMessage={errors.amount && touched.amount && errors.amount}
                                 />
 
                                 <Button
@@ -124,7 +143,7 @@ export const Electricity = ({ route, navigation }) => {
                         )}
                     </Formik>
                 </View>
-            </View>
+            </SafeAreaView>
 
             <Loader props={valueState.loader} handler={() => valueDispatch({ loader: { ...dummies.modalProcess.hide } })} />
         </>

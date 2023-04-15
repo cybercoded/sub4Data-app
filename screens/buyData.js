@@ -10,19 +10,10 @@ import * as yup from "yup";
 
 
 export const BuyData = ({ route, navigation }) => {
-    const { network, isPinVerified, product_code, description, amount } = route.params;
+    const { network, product_code, description, amount } = route.params;
     const [value, setValue] = React.useState(false);
     const { valueState, valueDispatch } = React.useContext(Context);
-
-    const formRef = React.useRef();
-
-    React.useEffect(() => {
-        
-        if( isPinVerified && formRef.current) {
-            formRef.current.handleSubmit()
-        }
-
-    }, []);
+    const [isPinVerified, setIsPinVerified] = React.useState(false);
 
     return (
         <>
@@ -37,7 +28,6 @@ export const BuyData = ({ route, navigation }) => {
 
                 <View style={{flex: 4}}>
                     <Formik
-                        innerRef={formRef}
                         initialValues={{
                             amount: amount,
                             phone: valueState.basicData.tel,
@@ -135,10 +125,13 @@ export const BuyData = ({ route, navigation }) => {
                                 </View>
 
                                 <Button
-                                    title="Proceed"
-                                    onPress={() => navigation.navigate('VerifyPin', {landingPage: 'BuyData'})}
+                                    title={isPinVerified ? 'Purchase now' : 'Verify Transaction PIN'}
+                                    onPress={() => {
+                                        isPinVerified ? handleSubmit() : navigation.navigate('VerifyPin');
+                                        setIsPinVerified(true);
+                                    }}
                                     buttonStyle={styles.button}
-                                    disabled={isSubmitting}
+                                    containerStyle={{ marginTop: 20 }}
                                 />
                             </>
                         )}

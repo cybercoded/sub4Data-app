@@ -12,6 +12,14 @@ export const dummies = {
     prepaid_airtel: require('../assets/prepaid_airtel.jpg'),
     prepaid_glo: require('../assets/prepaid_glo.jpg'),
     prepaid_9mobile: require('../assets/prepaid_9mobile.png'),
+
+    dstv: require('../assets/dstv.png'),
+    gotv: require('../assets/gotv.png'),
+    startimes: require('../assets/startimes.png'),
+
+    electricity: require('../assets/electricity.png'),
+
+
     icon: require('../assets/icon.png')
   },
 

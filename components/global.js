@@ -4,6 +4,8 @@ import { Button, ButtonGroup, Card, Dialog, Icon, Image, Text } from 'react-nati
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import axios from 'axios';
 import { Constants } from 'expo';
+import { HStack } from 'react-native-stacks';
+import { Skeleton } from '@rneui/themed';
 
 
 export const BASE_URL = 'http://192.168.70.102:19000/localhost/topup-mobile/'
@@ -437,6 +439,15 @@ export const ScrollViewHeader = (props) => {
 		</Card>
 	);
 };
+
+export const SkeletonView = ({length}) => (
+	[...Array(length)].map((item, index) => (
+		<HStack key={index} style={{marginBottom: 20}} aligment='leading' spacing={10}>
+		  <Skeleton width={40} circle height={40}/>
+		  <Skeleton width='80%' animation='wave' height={40}/>
+		</HStack> 
+	))   
+);
 
 export const styles = StyleSheet.create({
 	container: {

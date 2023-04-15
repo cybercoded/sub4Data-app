@@ -1,13 +1,13 @@
-import { View, Text, Image, TouchableOpacity, ScrollView, Alert, Modal } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { API, BASE_URL, getData, Loader, LOCAL_API, ScrollViewHeader, storeData, styles, theme } from '../components/global';
-import { Badge, Button, ButtonGroup, Card, Icon, Input, ListItem } from 'react-native-elements';
+import { API, Loader,ScrollViewHeader, SkeletonView, styles } from '../components/global';
+import { Badge, ListItem } from 'react-native-elements';
 import { dummies } from '../components/dummies';
 import { Context } from '../components/userContext';
-import indexOf from 'lodash/indexOf';
+import { isEmpty } from 'lodash';
 
-export const Data = ({ route, navigation }) => {
-    const { sub_service_code, serviceImage, sub_service_name } = route.params;
+export const Cable = ({ route, navigation }) => {
+    const { sub_service_code, sub_service_image, sub_service_name } = route.params;
     const [buttonChange, setbuttonChange] = useState(null);
     const [dataOptions, setDataOptions] = useState([]);
     const [mainOptions, setMainOptions] = useState([]);
@@ -33,7 +33,7 @@ export const Data = ({ route, navigation }) => {
     const buttons = mainOptions?.map((list) => <Text>{list.sub_service_name}</Text>);
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <Loader
                 submittion={() => changeOption(buttonChange)}
                 props={valueState.loader}
@@ -41,8 +41,8 @@ export const Data = ({ route, navigation }) => {
             />
             <View style={{ flex: 2 }}>
                 <ScrollViewHeader
-                    image={serviceImage}
-                    title={`Purchase ${sub_service_name} Data`}
+                    image={sub_service_image}
+                    title={sub_service_name}
                     subTitle={`Wallet Balance = ${valueState.basicData?.balance}`}
                 />
             </View>
@@ -56,30 +56,31 @@ export const Data = ({ route, navigation }) => {
                 }}
             ></View>
             <View style={{ flex: 7, width: '100%' }}>
-                <ScrollView>
-                    {dataOptions?.map((item, index) => (
-                        <ListItem
-                            key={index}
-                            Component={TouchableOpacity}
-                            bottomDivider={true}
-                            onPress={() =>
-                                navigation.navigate('BuyData', {
-                                    network: network,
-                                    product_code: item.product_code,
-                                    description: item.available_service_description,
-                                    amount: item.available_service_default_price
-                                })
-                            }
-                        >
-                            <ListItem.Content>
-                                <ListItem.Title>{item.available_service_name}</ListItem.Title>
-                                <ListItem.Subtitle>{item.available_service_description}</ListItem.Subtitle>
-                            </ListItem.Content>
-                            <Badge value={item.available_service_default_price} status="warning" />
-                        </ListItem>
-                    ))}
-                </ScrollView>
+                {isEmpty(dataOptions) && (
+                    <SkeletonView length={6} />
+                )}
+                {dataOptions?.map((item, index) => (
+                    <ListItem
+                        key={index}
+                        Component={TouchableOpacity}
+                        bottomDivider={true}
+                        onPress={() =>
+                            navigation.navigate('BuyCable', {
+                                sub_service_image: sub_service_image,
+                                product_code: item.product_code,
+                                sub_service_name: item.available_service_name,
+                                amount: item.available_service_default_price
+                            })
+                        }
+                    >
+                        <ListItem.Content>
+                            <ListItem.Title>{item.available_service_name}</ListItem.Title>
+                            <ListItem.Subtitle>{item.available_service_description}</ListItem.Subtitle>
+                        </ListItem.Content>
+                        <Badge value={item.available_service_default_price} status="warning" />
+                    </ListItem>
+                ))}
             </View>
-        </View>
+        </SafeAreaView>
     );
 };

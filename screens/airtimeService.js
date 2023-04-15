@@ -33,7 +33,7 @@ export const AirtimeService = ({ navigation }) => {
             <View style={styles.container}>
                 <View style={{ flex: 2 }}>
                     <ScrollViewHeader
-                        image= {{uri: "https://smartrecharge.ng/images/services/d8eca093071abc5145d83e275c2c2b8f31e908e9cd0f83371e73fa5d636281ae0f1cd0259d25b86745a3f32c71582b09b4b3c51e4756c262a48e7304413a1049.png"}}
+                        image= {{uri: `https://smartrecharge.ng/images/services/d8eca093071abc5145d83e275c2c2b8f31e908e9cd0f83371e73fa5d636281ae0f1cd0259d25b86745a3f32c71582b09b4b3c51e4756c262a48e7304413a1049.png`}}
                         title="Available services"
                         subTitle="Select from the list of services listed below"
                     />

@@ -1,11 +1,12 @@
-import { View, StyleSheet, Modal, TouchableOpacity, ActivityIndicator } from 'react-native'
+import { View, StyleSheet, Modal, TouchableOpacity, ActivityIndicator, Dimensions } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { Button, ButtonGroup, Card, Dialog, Icon, Image, Text } from 'react-native-elements'
+import { Button, ButtonGroup, Card, Dialog, Icon, Image, ListItem, Overlay, Text } from 'react-native-elements'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import axios from 'axios';
 import { Constants } from 'expo';
 import { HStack } from 'react-native-stacks';
 import { Skeleton } from '@rneui/themed';
+import { dummies } from './dummies';
 
 
 export const BASE_URL = 'http://192.168.70.102:19000/localhost/topup-mobile/'
@@ -444,10 +445,41 @@ export const SkeletonView = ({length}) => (
 	[...Array(length)].map((item, index) => (
 		<HStack key={index} style={{marginBottom: 20}} aligment='leading' spacing={10}>
 		  <Skeleton width={40} circle height={40}/>
-		  <Skeleton width='80%' animation='wave' height={40}/>
+		  <Skeleton width='75%' animation='wave' height={40}/>
 		</HStack> 
 	))   
 );
+
+export const MenuView = ({menuModal, setMenuModal}) => {
+
+	const windowsHeight  = Dimensions.get('window').height;
+
+	return (
+		<Overlay
+			isVisible={menuModal} 
+			onBackdropPress={() => setMenuModal(false)}
+			overlayStyle={{position: 'absolute', left: 0}}                
+		>
+			<View style={{flex: 1, width: 300, height: windowsHeight}}>
+					{  dummies.menus.map((item, index) => (
+							<ListItem
+								key={index}
+								Component={TouchableOpacity}
+								bottomDivider={true}
+								onPress={ () => navigation.navigate(item.page) }
+							>
+								<Icon color={theme.colors.primary} size={40} name={item.icon} />
+								<ListItem.Content>
+									<ListItem.Title>{item.text}</ListItem.Title>
+								</ListItem.Content>
+								<ListItem.Chevron size={40} />
+							</ListItem>
+						))
+					}
+			</View>
+		</Overlay>
+	);
+};
 
 export const styles = StyleSheet.create({
 	container: {
@@ -587,23 +619,5 @@ export const styles = StyleSheet.create({
 		shadowRadius: 4,
 		elevation: 5,
 		backgroundColor: 'rgba(0, 0, 0, 0.2)',
-	},
-	menuModalCenteredView: {
-		flex: 1,
-		flexDirection: 'row',
-		justifyContent: 'flex-start',
-		backgroundColor: 'rgba(0, 0, 0, 0.2)',
-	},
-	menuModalView: {
-		backgroundColor: theme.colors.white,
-		width: 250,
-		shadowColor: '#000',
-		shadowOffset: {
-			width: 0,
-			height: 2,
-		},
-		shadowOpacity: 0.25,
-		shadowRadius: 4,
-		elevation: 5,
-	},
+	}
 })

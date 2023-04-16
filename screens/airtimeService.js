@@ -41,39 +41,37 @@ export const AirtimeService = ({ navigation }) => {
 
                 <View style={{ flex: 4, width: '100%' }}>
                     <SafeAreaView>
-                        {
-                            <FlatList
-                                data={availableServices}
-                                renderItem={({ item, index }) => {
-                                    const image = item.main_service_logo 
-                                        ? `https://smartrecharge.ng/images/services/${item.main_service_logo}`
-                                        : dummies.images[item.sub_service_code]
-                                    return (
-                                        <ListItem
-                                            key={index}
-                                            Component={TouchableOpacity}
-                                            bottomDivider={true}
-                                            onPress={() =>
-                                                navigation.navigate('Airtime', {
-                                                    sub_service_code: item.sub_service_code,
-                                                    sub_service_name: item.sub_service_name
-                                                })
-                                            }
-                                        >
-                                            <Image 
-                                                source={image} 
-                                                style={{height: 50, width: 50}}
-                                            />
-                                            <ListItem.Content>
-                                                <ListItem.Title>{item.sub_service_name}</ListItem.Title>
-                                                <ListItem.Subtitle>{item.main_service_description}</ListItem.Subtitle>
-                                            </ListItem.Content>
-                                            <ListItem.Chevron size={40} />
-                                        </ListItem>
-                                    );
-                                }}
-                            />
-                        }
+                        <FlatList
+                            data={availableServices}
+                            renderItem={({ item, index }) => {
+                                const image = item.main_service_logo 
+                                    ? `https://smartrecharge.ng/images/services/${item.main_service_logo}`
+                                    : dummies.images[item.sub_service_code]
+                                return (
+                                    <ListItem
+                                        key={index}
+                                        Component={TouchableOpacity}
+                                        bottomDivider={true}
+                                        onPress={() =>
+                                            navigation.navigate('Airtime', {
+                                                sub_service_code: item.sub_service_code,
+                                                sub_service_name: item.sub_service_name
+                                            })
+                                        }
+                                    >
+                                        <Image 
+                                            source={image} 
+                                            style={{height: 50, width: 50}}
+                                        />
+                                        <ListItem.Content>
+                                            <ListItem.Title>{item.sub_service_name}</ListItem.Title>
+                                            <ListItem.Subtitle>{item.main_service_description}</ListItem.Subtitle>
+                                        </ListItem.Content>
+                                        <ListItem.Chevron size={40} />
+                                    </ListItem>
+                                );
+                            }}
+                        />
                     </SafeAreaView>
                 </View>
             </View>

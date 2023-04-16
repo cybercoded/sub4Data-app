@@ -18,17 +18,18 @@ export const Electricity = ({ route, navigation }) => {
     const subServiceRef = React.useRef({});  
 
 
-    const fetchData = (index) => {
+    const fetchData = (sub_service_code) => {
         valueDispatch({ loader: { ...dummies.modalProcess.loading } });    
         API.post(`get-sub-services.php?userId=1&service=others/get_available_services.php`, {
             service_code: service_code,
-            sub_service_code: availableServices[index]['sub_service_code']
+            sub_service_code: sub_service_code
         })
         .then((res) => {
             setAvailableSubServices(res.data.data);
-            subServiceRef.current.openDropdown()
+            subServiceRef.current.selectIndex(0)
             valueDispatch({ loader: { ...dummies.modalProcess.hide } });
-        }).catch((error) => {
+        })
+        .catch((error) => {
             valueDispatch({ loader: { ...dummies.modalProcess.error, text: error.message } });
         });       
     }
@@ -37,8 +38,8 @@ export const Electricity = ({ route, navigation }) => {
         API.post(`get-sub-services.php?userId=1&service=others/get_sub_services.php`, { service_code: service_code })
         .then((res) => {
             setAvailableServices(res.data.data);
-            serviceRef.current.openDropdown()
-            valueDispatch({ loader: { ...dummies.modalProcess.hide } });
+            serviceRef.current.selectIndex(0);
+            fetchData(res.data.data[0]['sub_service_code']);
         })
         .catch((error) => {
             valueDispatch({ loader: { ...dummies.modalProcess.error, text: error.message } });
@@ -103,7 +104,7 @@ export const Electricity = ({ route, navigation }) => {
                                     ref={serviceRef}
                                     data={availableServices.map((item) => item.sub_service_name)}
                                     onSelect={(selectedItem, index) => {
-                                        fetchData(index);
+                                        fetchData(availableServices[index]['sub_service_code']);
                                         setFieldValue('sub_service_name', availableServices[index]['sub_service_name']);
                                     }}
                                     buttonStyle={[styles.button, { height: 'auto', marginBottom: 20 }]}

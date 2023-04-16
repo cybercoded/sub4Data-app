@@ -52,7 +52,11 @@ export const Navigations = () => {
             >
                 <Stack.Screen name="CreatePin" options={{ title: 'Create Transaction PIN' }} component={CreatePin} />
 
-                <Stack.Screen name="VerifyPin" options={{ title: 'Transaction PIN Verification' }} component={VerifyPin} />
+                <Stack.Screen
+                    name="VerifyPin" 
+                    options={{ title: 'Transaction PIN Verification' }} 
+                    component={VerifyPin} 
+                />
 
                 <Stack.Screen name="Welcome" options={{ title: 'Welcomme Page', headerShown: false }} component={Welcome} />
                 <Stack.Screen name="Index" component={Index} options={{ headerShown: false }} />

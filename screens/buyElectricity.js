@@ -14,6 +14,7 @@ export const BuyElectricity = ({ route, navigation }) => {
     const { valueState, valueDispatch } = React.useContext(Context);
     const [userDetails, setUserDetails] = React.useState([]);
     const [isPinVerified, setIsPinVerified] = React.useState(false);
+    
     React.useEffect(() => {
         valueDispatch({ loader: { ...dummies.modalProcess.loading } });
         API.post(`meter-number-verify.php?userId=1&service=electric/`, {
@@ -21,24 +22,24 @@ export const BuyElectricity = ({ route, navigation }) => {
             product_code: product_code,
             task: task
         })
-            .then((res) => {
-                if (res.data.status === true) {
-                    setUserDetails(res.data.data);
-                    valueDispatch({ loader: { ...dummies.modalProcess.hide } });
-                } else {
-                    valueDispatch({
-                        loader: {
-                            ...dummies.modalProcess.error,
-                            title: res.data.message,
-                            text: 'please try again!'
-                        }
-                    });
-                }
-            })
-            .catch((error) => {
-                valueDispatch({ loader: { ...dummies.modalProcess.error, text: error.message } });
-                console.error(error.message);
-            });
+        .then((res) => {
+            if (res.data.status === true) {
+                setUserDetails(res.data.data);
+                valueDispatch({ loader: { ...dummies.modalProcess.hide } });
+            } else {
+                valueDispatch({
+                    loader: {
+                        ...dummies.modalProcess.error,
+                        title: res.data.message,
+                        text: 'please try again!'
+                    }
+                });
+            }
+        })
+        .catch((error) => {
+            valueDispatch({ loader: { ...dummies.modalProcess.error, text: error.message } });
+            console.error(error.message);
+        });
     }, []);
 
     return (

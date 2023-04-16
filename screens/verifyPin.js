@@ -17,16 +17,16 @@ export const VerifyPin = ({route, navigation}) => {
 
     const verifyPinHandler = (code) => {
         const newPinAttempts = [...pinCode, code];
-
-        if(newPinAttempts.length <= 4 ){
-            setPinCode(newPinAttempts)
+        if(newPinAttempts.length <= 4) {
+            setPinCode(newPinAttempts);
         }
+
         if(isObject(code)) {
             setPinCode([]);
             return;
         }
 
-        if(newPinAttempts.length >= 4 ){
+        if(newPinAttempts.length === 4 ){
             valueDispatch({loader: {...dummies.modalProcess.loading}});
             // API.put('check-pin.php?userId='+valueState.basicData.userId, {pin: newPinAttempts.join('')}).then(res => {
             getData('basicData').then(res => {
@@ -38,8 +38,7 @@ export const VerifyPin = ({route, navigation}) => {
                         if( !isNull(landingPage) ) {
                             navigation.navigate(landingPage);
                         }else {
-                            console.warn('back was clicked')
-                            navigation.goBack();
+                            navigation.goBack(null);
                         }
                     }, 1000);
                 }else {

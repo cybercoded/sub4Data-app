@@ -1,16 +1,18 @@
-import { ScrollView, View, TouchableOpacity, Image, Modal, Text } from 'react-native'
+import { ScrollView, View, TouchableOpacity, Image, Text } from 'react-native'
 import React from 'react'
-import { Header, Icon, Card, BottomSheet } from 'react-native-elements'
-import { styles, theme } from '../components/global'
+import { Header, Icon, Card, Overlay, FlatList, ListItem } from 'react-native-elements'
+import { MenuView, styles, theme } from '../components/global'
 import { dummies } from '../components/dummies'
 import { Context } from '../components/userContext'
 
 export const Dashboard = ({ navigation }) => {
-    const [menuModal, setmenuModal] = React.useState(false)
-    const { valueState, valueDispatch } = React.useContext(Context);	
+    const [menuModal, setMenuModal] = React.useState(false)
+    const { valueState, valueDispatch } = React.useContext(Context);
 
     return (
         <>
+            <MenuView menuModal={menuModal} setMenuModal={setMenuModal} />
+            
             <Header
                 barStyle="default"
                 centerComponent={{
@@ -19,7 +21,7 @@ export const Dashboard = ({ navigation }) => {
                 placement="left"
                 leftComponent={{
                     icon: 'menu',
-                    onPress: () => setmenuModal(!menuModal),
+                    onPress: () => setMenuModal(!menuModal),
                 }}
                 rightComponent={{ 
                     icon: 'settings', 
@@ -221,5 +223,5 @@ export const Dashboard = ({ navigation }) => {
                 </ScrollView>
             </View>
         </>
-    )
-}
+    );
+};

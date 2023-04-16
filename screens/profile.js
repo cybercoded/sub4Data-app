@@ -20,16 +20,16 @@ export const Profile = ({navigation}) => {
             page: 'UpdateProfile',
         },
         {
-            icon: 'account-circle', 
-            title: 'Basic Information', 
-            subtitle: 'Manage and update your personal information',
-            page: 'UpdateProfile',
+            icon: 'lock-alert-outline', 
+            title: 'Create Transaction PIN', 
+            subtitle: 'Create new Transaction PIN',
+            page: 'CreatePin',
         },
         {
-            icon: 'account-circle', 
-            title: 'Basic Information', 
-            subtitle: 'Manage and update your personal information',
-            page: 'UpdateProfile',
+            icon: 'lock-open-outline', 
+            title: 'Update Transaction PIN', 
+            subtitle: 'Manage your Transaction PIN',
+            page: 'Verify PIN',
         },
     ]
 

@@ -43,6 +43,8 @@ export const VerifyOtpPIn = ({navigation}) => {
                     initialValues={{
                         pin: ''
                     }}
+                    validateOnChange={true}
+                    validateOnMount={true}
                     validationSchema={yup.object().shape({
                         pin: yup
                             .string()
@@ -53,21 +55,16 @@ export const VerifyOtpPIn = ({navigation}) => {
 
                     onSubmit={(values) => {
                         valueDispatch({loader: {...dummies.modalProcess.loading}});
-                        API.put(`reset-pin`).then((res) => {
-                            if ( res.data.status === 200 ) {
-                                valueDispatch({loader: {...dummies.modalProcess.success, text: res.data.message+', please wait to be refreshed'}});
-                                API.get(`get-user`).then((res) => {
-                                    if ( res.data.status === 200) {                                       
-                                        storeData('basicData', {...res.data.data});
-                                        valueDispatch({loader: {...dummies.modalProcess.success, text: res.data.message}});                                
-                                        delay(() => {
-                                            valueDispatch({loader: {...dummies.modalProcess.hide}});
-                                            navigation.navigate('Home');
-                                        }, 2000);                                
-                                    }
-                                });
+                        API.get(`verify-otp-for-pin/${values.pin}`).then((res) => {
+                            if ( res.data.status === 200 ) {                               
+                                valueDispatch({loader: {...dummies.modalProcess.success, text: res.data.message}});                                
+                                delay(() => {
+                                    valueDispatch({loader: {...dummies.modalProcess.hide}});
+                                    navigation.navigate('CreatePin');
+                                }, 1000);                   
+                                    
                             } else {
-                                valueDispatch({loader: {...dummies.modalProcess.error, text: res.data.errors}});
+                                valueDispatch({loader: {...dummies.modalProcess.error, text: res.data.message}});
                             }
                         })
                         .catch((err) => {

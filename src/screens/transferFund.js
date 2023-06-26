@@ -21,7 +21,7 @@ export const TransferFund = ({navigation}) => {
             if (res.data.status === 200) {
                 valueDispatch({ loader: { ...dummies.modalProcess.success, text: res.data.message}});
                 delay(() => {
-                    valueDispatch({ loader: { ...dummies.modalProcess.hide}})
+                    valueDispatch({ loader: { ...dummies.modalProcess.hide}});
                     navigation.navigate('Home');
                 }, 1000)
             } else {

@@ -1,20 +1,27 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import 'react-native-gesture-handler';
+import React from 'react'
+import { StatusBar } from 'expo-status-bar'
+import { ThemeProvider } from 'react-native-elements'
+import { ToastProvider } from 'react-native-toast-notifications';
+import { theme } from './src/components/global';
+import { Context, initialValues, reducer } from './src/components/userContext';
+import { Navigations } from './src/components/navigations';
+import { Text } from 'react-native';
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+const App = () => {
+    const [values, dispatch] = React.useReducer(reducer, initialValues);
+    
+    return (
+        <ToastProvider>
+            <StatusBar style="auto" />
+            <ThemeProvider theme={theme}>
+                <Context.Provider value={{ valueState: values, valueDispatch: dispatch }}>
+                    <Navigations />
+                </Context.Provider>
+            </ThemeProvider>
+        </ToastProvider>
+    )
+};
+
+export default App;

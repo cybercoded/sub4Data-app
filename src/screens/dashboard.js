@@ -5,6 +5,7 @@ import {
 } from "react-native";
 import React from "react";
 import {
+    Badge,
   Icon,
   ListItem,
   Text
@@ -13,9 +14,11 @@ import { styles, theme } from "../components/global";
 import { dummies } from "../components/dummies";
 import { Context } from "../components/userContext";
 import { LinearGradient } from "expo-linear-gradient";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 export const Dashboard = ({ navigation }) => {
   const { valueState, valueDispatch } = React.useContext(Context);
+  const [balanceIsVisible, setBalanceIsVisible] = React.useState(false)
 
   return (
     <>
@@ -59,12 +62,12 @@ export const Dashboard = ({ navigation }) => {
                     }}
                 >
                     <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between', flexBasis: 50}}>
-                        <Text style={{ color: "#fff", fontWeight: "bold" }}>Basic user</Text>
+                        <Badge value={valueState.basicData?.levels[0].name} status="success" />
                         <Icon
                             name="eye"
                             type="ionicon"
                             color="#fff"
-                            // style={{alignItems: 'center', alignSelf: 'center'}}
+                            onPress={() => setBalanceIsVisible(!balanceIsVisible) }
                         />
                     </View>
                     <Text
@@ -76,10 +79,10 @@ export const Dashboard = ({ navigation }) => {
                             marginTop: 20,
                         }}
                     >
-                    ₦{new Intl.NumberFormat().format(valueState.basicData?.balance)}
+                        ₦{ balanceIsVisible ? new Intl.NumberFormat().format(valueState.basicData?.balance) : '********'}
                     </Text>
                     <Text style={{ color: "#fff", fontSize: 16, fontWeight: "bold" }}>
-                    {valueState.basicData?.name}
+                        {valueState.basicData?.name}
                     </Text>
                 </LinearGradient>
                 </View>
@@ -109,38 +112,33 @@ export const Dashboard = ({ navigation }) => {
 
                 <TouchableOpacity
                     style={{
-                    flex: 1,
-                    alignItems: "center",
-                    padding: 10,
-                    height: 80,
-                    backgroundColor: "#fff",
-                    borderRadius: 20,
-                    marginRight: 10,
+                        flex: 1,
+                        alignItems: "center",
+                        padding: 10,
+                        height: 80,
+                        backgroundColor: "#fff",
+                        borderRadius: 20,
+                        marginRight: 10,
                     }}
-                    onPress={() =>
-                    setBottomModal({
-                        visible: !bottomModal.visible,
-                        content: "agent",
-                    })
-                    }
+                    onPress={() => navigation.navigate('TransferFund') }
                 >
-                    <Icon color={theme.colors.primary} size={40} name="verified-user" />
-                    <Text>Agent</Text>
+                    <MaterialCommunityIcons color={theme.colors.primary} size={40} name="send-circle-outline" />
+                    <Text>Transfer Fund</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                     style={{
-                    flex: 1,
-                    alignItems: "center",
-                    padding: 10,
-                    height: 80,
-                    backgroundColor: "#fff",
-                    borderRadius: 20,
+                        flex: 1,
+                        alignItems: "center",
+                        padding: 10,
+                        height: 80,
+                        backgroundColor: "#fff",
+                        borderRadius: 20,
                     }}
-                    onPress={() => navigation.navigate("FundWallet")}
+                    onPress={() => navigation.navigate("TransactionHistory")}
                 >
-                    <Icon color={theme.colors.primary} size={40} name="people" />
-                    <Text>Refer</Text>
+                    <Icon color={theme.colors.primary} size={40} name="history" />
+                    <Text>Transactions</Text>
                 </TouchableOpacity>
                 </View>
             </View>

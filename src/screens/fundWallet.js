@@ -24,38 +24,41 @@ export const FundWallet = ({route, navigation}) => {
                 </View>
             }
                 
-            <View style={{flex: 10, width: '100%'}}>
-                <ListItem
-                    Component={TouchableOpacity}
-                    bottomDivider={true}
-                    onPress={() => navigation.navigate("AutomatedBanks") }
-                >
-                    <MaterialCommunityIcons color={theme.colors.primary} raised size={50} name="bank-transfer" />
-                    <ListItem.Content>
-                        <ListItem.Title>
-                            Automated Banks 
-                        </ListItem.Title>
-                        <ListItem.Subtitle>
-                            Pay using Monnify Automated Banks with less charges (fast and reliable) 
-                        </ListItem.Subtitle>
-                    </ListItem.Content>
-                </ListItem>
+            <View style={{flex: 10, alignItems: 'center'}}>
+                <View style={{ width: '90%'}}>
+                    <ListItem
+                        Component={TouchableOpacity}
+                        bottomDivider={true}
+                        style={{marginVertical: 10}}
+                        onPress={() => navigation.navigate("AutomatedBanks") }
+                    >
+                        <MaterialCommunityIcons color={theme.colors.primary} raised size={50} name="bank-transfer" />
+                        <ListItem.Content>
+                            <ListItem.Title>
+                                Automated Banks 
+                            </ListItem.Title>
+                            <ListItem.Subtitle>
+                                Pay using Monnify Automated Banks with less charges (fast and reliable) 
+                            </ListItem.Subtitle>
+                        </ListItem.Content>
+                    </ListItem>
 
-                <ListItem
-                    Component={TouchableOpacity}
-                    bottomDivider={true}
-                    onPress={() =>  navigation.navigate("MerchantPayment")}
-                >
-                    <MaterialCommunityIcons color={theme.colors.primary} raised size={50} name="bank" />
-                    <ListItem.Content>
-                        <ListItem.Title>
-                            Monnify Payment
-                        </ListItem.Title>
-                        <ListItem.Subtitle>
-                            Pay using Monnify Merchant Payment with affordable charges
-                        </ListItem.Subtitle>
-                    </ListItem.Content>
-                </ListItem>
+                    <ListItem
+                        Component={TouchableOpacity}
+                        bottomDivider={true}
+                        onPress={() =>  navigation.navigate("MerchantPayment")}
+                    >
+                        <MaterialCommunityIcons color={theme.colors.primary} raised size={50} name="bank" />
+                        <ListItem.Content>
+                            <ListItem.Title>
+                                Monnify Payment
+                            </ListItem.Title>
+                            <ListItem.Subtitle>
+                                Pay using Monnify Merchant Payment with affordable charges
+                            </ListItem.Subtitle>
+                        </ListItem.Content>
+                    </ListItem>
+                </View>
             </View>
         </>
     );

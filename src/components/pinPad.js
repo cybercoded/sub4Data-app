@@ -13,7 +13,7 @@ export const PinPad = (props) => {
     const {valueState, valueDispatch} = React.useContext(Context);
 
     const BUTTONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, <Icon size={30} color={theme.colors.primary} name='backspace' />];
-    const [selectedPIN, setSelectedPIN] = React.useState();
+    const [selectedPIN, setSelectedPIN] = React.useState(null);
 
     return (
       <>
@@ -32,18 +32,11 @@ export const PinPad = (props) => {
             </View>
             
             <View style={{flex: 1}}>
-                <View style={[styles.rowFlex, { width: 80 }]}>
-                    {[...Array(4)].map((code, codeIndex) => (
-                    <TouchableOpacity
-                        key={codeIndex}
-                    >   
-                        {
-                            props.pinCode[codeIndex] ? (
-                                <View style={styles.currentDot}></View>
-                            ) : <View style={styles.dots}></View>
-                        }
-                    </TouchableOpacity>
-                    ))}
+                <View style={[styles.rowFlex, { width: 80 }]}>                    
+                    <View style={[styles.dots, {backgroundColor: props.pinCode.length >= 1 ? theme.colors.primary : theme.colors.dimmer}]}></View>                               
+                    <View style={[styles.dots, {backgroundColor: props.pinCode.length >= 2 ? theme.colors.primary : theme.colors.dimmer}]}></View>                               
+                    <View style={[styles.dots, {backgroundColor: props.pinCode.length >= 3 ? theme.colors.primary : theme.colors.dimmer}]}></View>                               
+                    <View style={[styles.dots, {backgroundColor: props.pinCode.length >= 4 ? theme.colors.primary : theme.colors.dimmer}]}></View>                               
                 </View>
             </View>
             

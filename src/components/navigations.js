@@ -10,7 +10,6 @@ import { Settings } from "../screens/settings";
 import { Registration } from "../screens/registration";
 import { Signin } from "../screens/Signin";
 import { Index } from "../screens";
-import { ForgotPassword } from "../screens/forgotPassword";
 import { CreatePin } from "../screens/createPin";
 import { Logout } from "../screens/logOut";
 import { Welcome } from "../screens/welcome";
@@ -39,6 +38,7 @@ import { ForgetPassword } from "../screens/forgetPassword";
 import { VerifyOtpPassword } from "../screens/verifyOtpPassword";
 import { NewPassword } from "../screens/newPassword";
 import { UpdatePin } from "../screens/updatePin";
+import TransferFund from "../screens/transferFund";
 
 
 export const Navigations = () => {
@@ -128,7 +128,7 @@ export const Navigations = () => {
     <>
       <NavigationContainer>
         <Stack.Navigator            
-          initialRouteName="VerifyOtpPIn"
+          initialRouteName="TransferFund"
           screenOptions={{
             headerStyle: { backgroundColor: theme.colors.primary },
             headerTitleStyle: { color: 'white' },
@@ -284,14 +284,14 @@ export const Navigations = () => {
             component={Signin}
           />
           <Stack.Screen
-            name="ForgotPassword"
-            options={{ title: "Forgot password" }}
-            component={ForgotPassword}
-          />
-          <Stack.Screen
             name="TransactionHistory"
             options={{ title: "Transaction History" }}
             component={TransactionHistory}
+          />
+          <Stack.Screen
+            name="TransferFund"
+            options={{ title: "Transfer Fund" }}
+            component={TransferFund}
           />
           <Stack.Screen
             name="BankTransfer"

@@ -77,8 +77,8 @@ export const Welcome = ({ navigation }) => {
 
   return (
     <>
-      <View style={styles.container}>
-        <View style={{ flex: 12, alignItems: 'center'}}>
+      <View style={[styles.container, {backgroundColor: theme.colors.primary}]}>
+        <View style={{ flex: 10, alignItems: 'center'}}>
           <ScrollView horizontal={true}>
             {dummies.welcomePageSliders.map((slider) => (
               <View
@@ -95,7 +95,7 @@ export const Welcome = ({ navigation }) => {
                     style={{ height: 100, width: 100 }}
                     source={slider.image}
                   />
-                  <Text style={{ marginVertical: 10, textAlign: 'center', fontSize: 20, color: theme.colors.dim}}>
+                  <Text style={{ marginVertical: 10, textAlign: 'center', fontSize: 20, color: theme.colors.white}}>
                     {slider.text}
                   </Text>
                 </View>
@@ -104,7 +104,7 @@ export const Welcome = ({ navigation }) => {
           </ScrollView>          
         </View>
           
-        <View style={{flex: 3, alignItems: 'center', justifyContent: 'flex-end'}}>
+        <View style={{flex: 2, alignItems: 'center', justifyContent: 'flex-end'}}>
           <View style={{flex: 1}}>
             <View style={[styles.rowFlex, { width: 80 }]}>
                 {dummies.welcomePageSliders.map((slider) => (
@@ -112,38 +112,34 @@ export const Welcome = ({ navigation }) => {
                     key={slider.id}
                     onPress={() => navSlides("", slider.id)}
                   >
-                    <View
-                      style={sliders[slider.id] ? styles.currentDot : styles.dots}
-                    ></View>
+                    <View style={sliders[slider.id] ? styles.currentDot : styles.dots}></View>
                   </TouchableOpacity>
                 ))}
             </View>
           </View>
-          <View style={{flex: 2}}>
+          <View style={{flex: 3}}>
             <View style={{width: windowsWidth-50}}>
-              {currentSlide > 1 && (
                   <Button
                     title="Prev"
                     type="clear"
+                    disabled={currentSlide < 1}
                     buttonStyle={styles.button}
                     onPress={() => navSlides("prev")}
                   />
-              )}
               {currentSlide < Object.values(sliders).length ? (
                   <Button
                     title="Next"
                     type="outline"
                     onPress={() => navSlides("next")}
-                    buttonStyle={styles.button}
-                    icon={<Icon name="arrow-right" size={30} color={theme.colors.primary} />}
+                    buttonStyle={[styles.button, {backgroundColor: theme.colors.white}]}
+                    icon={<Icon name="arrow-right" size={30} color={theme.colors.dim} />}
                     iconLeft
                   />
               ) : (
                 <Button
                   title="Get Started"
-                  type="solid"
                   onPress={() => navigation.navigate("Registration")}
-                  buttonStyle={styles.button}
+                  buttonStyle={[styles.button, {backgroundColor: theme.colors.dim}]}
                   icon={<Icon name="arrow-right" size={30} color="white" />}
                   iconRight
                 />

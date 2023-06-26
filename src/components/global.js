@@ -614,8 +614,8 @@ export const MenuView = () => {
 	const navigation = useNavigation();
 	return (
 		<DrawerContentScrollView>
-			<View style={{paddingVertical: 40, backgroundColor: theme.colors.primary}}>
-				<Image source={dummies.images.icon} style={{width: 100, height: 100, alignSelf: 'center'}} />
+			<View style={{paddingVertical: 40, backgroundColor: theme.colors.primary, flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+				<Image source={dummies.images.icon} style={{width: 100, height: 100}} resizeMode='contain' />
 			</View>
 			{  dummies.menus.map((item, index) => (
 				<ListItem
@@ -642,6 +642,7 @@ export const styles = StyleSheet.create({
 		justifyContent: 'center',
 		paddingVertical: 50,
 		paddingHorizontal: 20,
+		backgroundColor: theme.colors.white,
 		width: '100%'
 	},
 	menuListStyle: {
@@ -708,10 +709,10 @@ export const styles = StyleSheet.create({
 	},
 
 	currentDot: {
-		height: 10,
-		width: 10,
+		height: 15,
+		width: 15,
 		borderRadius: 50,
-		backgroundColor: theme.colors.primary,
+		backgroundColor: theme.colors.white,
 	},
 
 	colomnFlex: {

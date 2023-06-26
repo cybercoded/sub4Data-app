@@ -29,8 +29,8 @@ export const VerifyPin = ({action, title, closePinScreen, isVisible}) => {
                     valueDispatch({loader: {...dummies.modalProcess.success, text: 'PIN was matched, Please wait to continue with your transaction'}});
                     delay(() => {
                         valueDispatch({loader: {...dummies.modalProcess.hide}});
-                        action();
-                        closePinScreen();
+                        action && action();
+                        closePinScreen && closePinScreen();
                     }, 1000);
                 }else {
                     valueDispatch({loader: {...dummies.modalProcess.error, text: 'Incorrect PIN, please try again'}});

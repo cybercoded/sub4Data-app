@@ -99,7 +99,7 @@ export const TransactionHistory = ({navigation}) => {
                     }}
                     scrollEventThrottle={400}
                 >
-                    <ListItem  onPress={() => setFilterScreenIsVisible(true) } bottomDivider>
+                    <ListItem style={{marginBottom: 20}}  onPress={() => setFilterScreenIsVisible(true) } bottomDivider>
                         <Icon name='search' size={30} />
                         <ListItem.Content>
                             <ListItem.Title>Filter Transactions</ListItem.Title>

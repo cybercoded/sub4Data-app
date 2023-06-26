@@ -25,7 +25,7 @@ export const TransferFund = ({navigation}) => {
                     navigation.navigate('Home');
                 }, 1000)
             } else {
-                valueDispatch({ loader: { ...dummies.modalProcess.error, text: res.data.errors}})
+                valueDispatch({ loader: { ...dummies.modalProcess.error, text: res.data.errors}});
             }
         }).catch((err) => {
             valueDispatch({ loader: { ...dummies.modalProcess.error, text: err.message }});

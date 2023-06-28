@@ -43,6 +43,8 @@ export const UpdateProfile = ({navigation}) => {
                                             navigation.navigate('Home');
                                         }, 2000);                                
                                     }
+                                }).catch((err) => {
+                                    valueDispatch({ loader: { ...dummies.modalProcess.error, text: err.message }});
                                 });
                             } else {
                                 valueDispatch({loader: {...dummies.modalProcess.error, text: res.data.errors}});

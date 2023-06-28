@@ -42,10 +42,14 @@ export const TransactionHistory = ({navigation}) => {
             else {
                 valueDispatch({ loader: { ...dummies.modalProcess.error, text: res.data.errors } });
             }
+        }).catch((err) => {
+            valueDispatch({ loader: { ...dummies.modalProcess.error, text: err.message }});
         });
 
         API.get(`view-product`).then((res) => {
             setProductList(res.data.product);
+        }).catch((err) => {
+            valueDispatch({ loader: { ...dummies.modalProcess.error, text: err.message }});
         });
     }, []);
 
@@ -69,6 +73,8 @@ export const TransactionHistory = ({navigation}) => {
                 else {
                     setIsLoadingMoreTextResponse(res.data.errors);
                 }
+            }).catch((err) => {
+                valueDispatch({ loader: { ...dummies.modalProcess.error, text: err.message }});
             });
         }
     };
@@ -83,6 +89,8 @@ export const TransactionHistory = ({navigation}) => {
     const fetchServices = () => {
         API.get(`view-services/${selectedProduct}`).then((res) => {
             setServiceList(res.data.services);
+        }).catch((err) => {
+            valueDispatch({ loader: { ...dummies.modalProcess.error, text: err.message }});
         });
     };
 
@@ -173,6 +181,8 @@ export const TransactionHistory = ({navigation}) => {
                                 else {
                                     valueDispatch({ loader: { ...dummies.modalProcess.error, text: res.data.errors } });
                                 }
+                            }).catch((err) => {
+                                valueDispatch({ loader: { ...dummies.modalProcess.error, text: err.message }});
                             });
                         }}
                     >

@@ -61,6 +61,8 @@ export const Signin = ({navigation}) => {
                                             valueDispatch({loader: {visible: false}})
                                         }, 2000);                                        
                                     }
+                                }).catch((err) => {
+                                    valueDispatch({ loader: { ...dummies.modalProcess.error, text: err.message }});
                                 });
                             }else {
                                 valueDispatch({loader: {...dummies.modalProcess.error, text: res.data.errors}});

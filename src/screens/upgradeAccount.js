@@ -28,7 +28,9 @@ export const UpgradeAccount = ({route, navigation}) => {
 
         getData('basicData').then((res) => {
             setCurrentLevel(res.level)
-        })
+        }).catch((err) => {
+            valueDispatch({ loader: { ...dummies.modalProcess.error, text: err.message }});
+        });
     }, []);
 
     const handleUpgrade = () => {
@@ -45,6 +47,8 @@ export const UpgradeAccount = ({route, navigation}) => {
                             navigation.navigate('Home');
                         }, 2000);                                
                     }
+                }).catch((err) => {
+                    valueDispatch({ loader: { ...dummies.modalProcess.error, text: err.message }});
                 });
             } else {
                 valueDispatch({loader: {...dummies.modalProcess.error, text: res.data.errors}});

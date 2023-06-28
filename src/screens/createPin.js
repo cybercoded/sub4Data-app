@@ -54,7 +54,9 @@ export const CreatePin = ({navigation}) => {
                                     navigation.navigate('Home');
                                 }, 2000);                                
                             }
-                        })
+                        }).catch((err) => {
+                            valueDispatch({ loader: { ...dummies.modalProcess.error, text: err.message }});
+                        });
                     } else {
                         valueDispatch({loader: {...dummies.modalProcess.error, text: res1.data.errors}});
                     }

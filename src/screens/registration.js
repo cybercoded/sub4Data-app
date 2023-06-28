@@ -58,8 +58,7 @@ export const Registration = ({ navigation }) => {
                             onSubmit={(values) => {
                                 valueDispatch({ loader: { ...dummies.modalProcess.loading } });
                                 axios.get('https://sub4data.com.ng/laravel/sanctum/csrf-cookie').then(() => {
-                                    API.post(`register`, values)
-                                    .then((res) => {
+                                    API.post(`register`, values).then((res) => {
                                         if (res.data.status === 200) {
                                             storeData('auth_token', res.data.token);
                                             valueDispatch({ loader: { ...dummies.modalProcess.success, text: res.data.message } });
@@ -77,8 +76,7 @@ export const Registration = ({ navigation }) => {
                                         } else {
                                             valueDispatch({ loader: { ...dummies.modalProcess.error, text: <ErrorResponse data={res.data.validation_errors} />} });
                                         }
-                                    })
-                                    .catch((err) => {
+                                    }).catch((err) => {
                                         valueDispatch({ loader: { ...dummies.modalProcess.error, text: err.message } });
                                         console.error(err.message);
                                     });

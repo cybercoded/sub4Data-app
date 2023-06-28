@@ -28,6 +28,8 @@ export const UpdatePassword = ({navigation}) => {
             } else {
                 valueDispatch({ loader: { ...dummies.modalProcess.error, text: res.data.errors}});   
             }
+        }).catch((err) => {
+            valueDispatch({ loader: { ...dummies.modalProcess.error, text: err.message }});
         });
     };
 

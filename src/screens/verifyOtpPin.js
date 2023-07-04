@@ -1,33 +1,28 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 import { Button, Icon, Input } from 'react-native-elements';
-import { API, Loader, storeData, styles, theme } from '../components/global';
+import { Loader, storeData, styles, theme } from '../components/global';
 import { Formik } from 'formik';
 import * as yup from "yup";
-import { Context } from '../components/userContext';
 import { dummies } from '../components/dummies';
 import delay from 'lodash/delay';
+import { closeAlert, showAlert } from 'react-native-customisable-alert';
 
 export const VerifyOtpPIn = ({navigation}) => {
     const formRef = React.useRef();
-    const {valueState, valueDispatch} = React.useContext(Context);
 
     const handleSendPin = () => {
-        valueDispatch({loader: {...dummies.modalProcess.loading}});
-        API.get(`reset-pin`).then((res) => {
+        axios.get(`reset-pin`).then((res) => {
             if ( res.data.status === 200 ) {
-                valueDispatch({loader: {...dummies.modalProcess.success, text: res.data.message}});
+                showAlert({alertType: 'success' , title: 'Success', message:  res.data.message});
                 delay(() => {
+                    closeAlert();
                     valueDispatch({loader: {...dummies.modalProcess.hide}});
                 }, 1000)
                 
             } else {
-                valueDispatch({loader: {...dummies.modalProcess.error, text: res.data.errors}});
+                showAlert({alertType: 'error' , title: 'Error', message: res.data.errors});
             }
-        })
-        .catch((err) => {
-            valueDispatch({loader: {...dummies.modalProcess.error, text: err.message}});
-            console.error(err.message);
         });
     }
     
@@ -54,22 +49,17 @@ export const VerifyOtpPIn = ({navigation}) => {
                     })}
 
                     onSubmit={(values) => {
-                        valueDispatch({loader: {...dummies.modalProcess.loading}});
-                        API.get(`verify-otp-for-pin/${values.pin}`).then((res) => {
+                        axios.get(`verify-otp-for-pin/${values.pin}`).then((res) => {
                             if ( res.data.status === 200 ) {                               
-                                valueDispatch({loader: {...dummies.modalProcess.success, text: res.data.message}});                                
+                                showAlert({alertType: 'success' , title: 'Success', message:  res.data.message});                                
                                 delay(() => {
-                                    valueDispatch({loader: {...dummies.modalProcess.hide}});
+                                    closeAlert();
                                     navigation.navigate('CreatePin');
                                 }, 1000);                   
                                     
                             } else {
-                                valueDispatch({loader: {...dummies.modalProcess.error, text: res.data.message}});
+                                showAlert({alertType: 'error' , title: 'Error', message: res.data.errors});
                             }
-                        })
-                        .catch((err) => {
-                            valueDispatch({loader: {...dummies.modalProcess.error, text: err.message}});
-                            console.error(err.message);
                         });
                     }}
                 >
@@ -96,11 +86,6 @@ export const VerifyOtpPIn = ({navigation}) => {
                     )}
                 </Formik>
             </View>
-            <Loader
-                handleRetry={() => formRef.current.handleSubmit()}
-                handler={() => valueDispatch({ loader: { ...dummies.modalProcess.hide } }) }
-                props={valueState.loader}
-            />
         </>
     )
 };

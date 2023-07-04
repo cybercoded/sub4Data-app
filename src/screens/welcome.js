@@ -7,18 +7,18 @@ import {
   Dimensions
 } from "react-native";
 import {
+  getData,
   storeData,
   styles,
   theme,
 } from "../components/global";
 import { Button, Icon, Input, Text } from "react-native-elements";
 import { dummies } from "../components/dummies";
-import { Context } from "../components/userContext";
+
 import { VerifyPin } from "./verifyPin";
 
 export const Welcome = ({ navigation }) => {
 
-  const { valueState, valueDispatch } = React.useContext(Context);
   const [pinScreen, setPinScreen] = React.useState(false);
   const windowsWidth  = Dimensions.get('window').width;
 
@@ -31,26 +31,21 @@ export const Welcome = ({ navigation }) => {
 
   const [currentSlide, setCurrentSlide] = useState(1);
 
-  const redirector = () => {
-    if (valueState.basicData) {
-      if( valueState.basicData.pin.length === 4 && valueState.basicData.isLoggedIn == true ) {
-        // setPinScreen(true);
-        navigation.navigate('Home');
-        return;
-      }else if( valueState.basicData.pin.length === 4 && valueState.basicData.isLoggedIn == false ) {
-        navigation.navigate('Signin');
-        return;
-      }else if( valueState.basicData?.pin.length === 0 ) {
-        navigation.navigate('Signin');
-      }
-    }
-  };
 
   React.useEffect(() => {
-
-    redirector();
-
-  }, [valueState.basicData]);
+    getData('basicData').then(res => {
+      if( res.pin.length === 4 && res.isLoggedIn == true ) {
+        setPinScreen(true);
+        // navigation.navigate('Home');
+        return;
+      }else if( res.pin.length === 4 && res.isLoggedIn == false ) {
+        navigation.navigate('Signin');
+        return;
+      }else if( res?.pin.length === 0 ) {
+        navigation.navigate('Signin');
+      }
+    });
+  }, []);
 
   const navSlides = (action, goToSlide) => {
     let calculation = goToSlide
@@ -77,8 +72,8 @@ export const Welcome = ({ navigation }) => {
 
   return (
     <>
-      <View style={[styles.container, {backgroundColor: theme.colors.primary}]}>
-        <View style={{ flex: 10, alignItems: 'center'}}>
+      <View style={[styles.centerContainer, {backgroundColor: theme.colors.primary}]}>
+        <View style={{ flex: 8, alignItems: 'center'}}>
           <ScrollView horizontal={true}>
             {dummies.welcomePageSliders.map((slider) => (
               <View
@@ -117,13 +112,14 @@ export const Welcome = ({ navigation }) => {
                 ))}
             </View>
           </View>
-          <View style={{flex: 3}}>
+          <View style={{flex: 4}}>
             <View style={{width: windowsWidth-50}}>
                   <Button
                     title="Prev"
                     type="clear"
                     disabled={currentSlide < 1}
                     buttonStyle={styles.button}
+                    titleStyle={{color: theme.colors.white}}
                     onPress={() => navSlides("prev")}
                   />
               {currentSlide < Object.values(sliders).length ? (

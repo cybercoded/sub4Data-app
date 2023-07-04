@@ -1,34 +1,30 @@
-import { View, Text, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { ListItem } from 'react-native-elements';
-import { API, BASE_URL, Loader, ScrollViewHeader, styles, theme } from '../components/global';
-import { dummies } from '../components/dummies';
-import { Context } from '../components/userContext';
+import { ScrollViewHeader, styles } from '../components/global';
 import { FlatList } from 'react-native';
 import isObject from 'lodash/isObject';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import upperFirst from 'lodash/upperFirst';
+import { showAlert } from 'react-native-customisable-alert';
+import axios from 'axios';
+import { ScrollView } from 'react-native-web';
 
 export const ViewServices = ({ route, navigation }) => {
-    const { valueState, valueDispatch } = React.useContext(Context);
     const [availableServices, setAvailableServices] = React.useState([]);
     const { id, slug, image } = route.params;
     React.useEffect(() => {
-        valueDispatch({ loader: { ...dummies.modalProcess.loading, text: 'Fetching available options' } });
-        API.get(`view-services/${id}`).then((res) => {
+        axios.get(`view-services/${id}`).then((res) => {
             if (isObject(res.data)) {
-                valueDispatch({ loader: { ...dummies.modalProcess.hide } });
                 setAvailableServices(res.data.services);
+            } else {
+                showAlert({alertType: 'error' , title: 'Error', message: res.data.errors});
             }
-        })
-        .catch((error) => {
-            valueDispatch({ loader: { ...dummies.modalProcess.error, text: error } });
         });
     }, []);
 
     return (
         <>
-            <View style={styles.container}>
+            <View style={styles.centerContainer}>
                 <View style={{ flex: 2 }}>
                     <ScrollViewHeader
                         image= {{uri: image}}
@@ -38,7 +34,7 @@ export const ViewServices = ({ route, navigation }) => {
                 </View>
 
                 <View style={{ flex: 5, width: '100%' }}>
-                    <SafeAreaView>
+                    <ScrollView>
                         <FlatList
                             data={availableServices}
                             
@@ -66,14 +62,9 @@ export const ViewServices = ({ route, navigation }) => {
                                 </ListItem>
                             )}
                         />
-                    </SafeAreaView>
+                    </ScrollView>
                 </View>
             </View>
-
-            <Loader 
-                props={valueState.loader} 
-                handler={() => valueDispatch({ loader: { ...dummies.modalProcess.hide } })} 
-            />
         </>
     );
 };

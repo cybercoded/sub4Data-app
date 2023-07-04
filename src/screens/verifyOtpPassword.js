@@ -1,34 +1,27 @@
 import { View, Text } from 'react-native'
 import React from 'react'
-import { Button, Icon, Input } from 'react-native-elements';
-import { API, BASE_URL, Loader, ScrollViewHeader, storeData, styles, theme } from '../components/global';
+import { Button, Input } from 'react-native-elements';
+import { BASE_URL, Loader, ScrollViewHeader, styles } from '../components/global';
 import { Formik } from 'formik';
 import * as yup from "yup";
-import { Context } from '../components/userContext';
 import { dummies } from '../components/dummies';
 import delay from 'lodash/delay';
-import axios from 'axios';
+import {axios as publicAxios} from 'axios';
+import { closeAlert, showAlert } from 'react-native-customisable-alert';
+
 
 export const VerifyOtpPassword = ({route, navigation}) => {
     const { email } = route.params;
     const formRef = React.useRef();
-    const {valueState, valueDispatch} = React.useContext(Context);
 
     const handleSendPin = () => {
-        valueDispatch({loader: {...dummies.modalProcess.loading}});
-        axios.put(`${BASE_URL}api/resend-otp`, {email: email}).then((res) => {
+        ;
+        publicAxios.put(`${BASE_URL}api/resend-otp`, {email: email}).then((res) => {
             if ( res.data.status === 200 ) {
-                valueDispatch({loader: {...dummies.modalProcess.success, text: res.data.message}});
-                delay(() => {
-                    valueDispatch({loader: {...dummies.modalProcess.hide}});
-                }, 1000)
+                showAlert({alertType: 'success' , title: 'Success', message:  res.data.message});
             } else {
-                valueDispatch({loader: {...dummies.modalProcess.error, text: res.data.errors}});
+                showAlert({alertType: 'error' , title: 'Error', message: res.data.errors});
             }
-        })
-        .catch((err) => {
-            valueDispatch({loader: {...dummies.modalProcess.error, text: err.message}});
-            console.error(err.message);
         });
     }
 
@@ -61,22 +54,17 @@ export const VerifyOtpPassword = ({route, navigation}) => {
                     validateOnChange={true}
                     validateOnMount={true}
                     onSubmit={(values) => {
-                        valueDispatch({loader: {...dummies.modalProcess.loading}});
-                        axios.put(`${BASE_URL}api/verify-registration-otp`, {otp: values.pin, email: email}).then((res) => {
+                        publicAxios.put(`${BASE_URL}api/verify-registration-otp`, {otp: values.pin, email: email}).then((res) => {
                             if ( res.data.status === 200 ) {
-                                valueDispatch({loader: {...dummies.modalProcess.success, text: res.data.message}});                                
+                                showAlert({alertType: 'success' , title: 'Success', message:  res.data.message});                                
                                 delay(() => {
-                                    valueDispatch({loader: {...dummies.modalProcess.hide}});
+                                    closeAlert();
                                     navigation.navigate('NewPassword', {otp: values.pin, email: email});
                                 }, 2000);                      
                                     
                             } else {
-                                valueDispatch({loader: {...dummies.modalProcess.error, text: res.data.errors}});
+                                showAlert({alertType: 'error' , title: 'Error', message: res.data.errors});
                             }
-                        })
-                        .catch((err) => {
-                            valueDispatch({loader: {...dummies.modalProcess.error, text: err.message}});
-                            console.error(err.message);
                         });
                     }}
                 >
@@ -104,11 +92,6 @@ export const VerifyOtpPassword = ({route, navigation}) => {
                     )}
                 </Formik>
             </View>
-            <Loader
-                handleRetry={() => formRef.current.handleSubmit()}
-                handler={() => valueDispatch({ loader: { ...dummies.modalProcess.hide } }) }
-                props={valueState.loader}
-            />
         </>
     )
 };

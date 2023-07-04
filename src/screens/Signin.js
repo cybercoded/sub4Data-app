@@ -1,29 +1,21 @@
 import React from 'react';
-import { Image, Modal, Pressable, TextInput, View } from 'react-native';
+import {  Pressable, View } from 'react-native';
 import { Formik } from 'formik';
-import { API, API_URL, BASE_URL, errorHandler, getData, Loader, ScrollViewHeader, storeData, styles, theme } from '../components/global';
+import { API_URL, BASE_URL, ScrollViewHeader, storeData, styles, theme } from '../components/global';
 import { Button, Icon, Input, Text } from 'react-native-elements';
 import * as yup from 'yup';
 import { delay, isObject } from 'lodash';
 import { dummies } from '../components/dummies';
-import axios from 'axios';
-import { Context, initialValues as loaderValues } from '../components/userContext';
+import axios, * as publicAxios from 'axios';
+import { closeAlert, showAlert } from 'react-native-customisable-alert';
 
-/* 
-    axios.get('https://sub4data.com.ng/laravel/sanctum/csrf-cookie',  {withCredential: true});
-    axios.get('https://sub4data.com.ng/laravel/api/v1/get-user',  {withCredential: true});
-*/ 
 
 export const Signin = ({navigation}) => {
 
     const [passwordVisibility, setPasswordVisibility] = React.useState(true);
 
-    const { valueState, valueDispatch } = React.useContext(Context);
-    
-
-
     return(
-        <View style={styles.container}>
+        <View style={styles.centerContainer}>
             <View style={{flex: 1, width: '100%'}}>
                 <View style={{marginBottom: 30}}>
                     <ScrollViewHeader
@@ -34,49 +26,40 @@ export const Signin = ({navigation}) => {
 
                 <Formik
                     initialValues={{
-                        email: 'cafeat9ja@gmail.coms',
-                        password: 'password',
+                        email: '',
+                        password: '',
                     }}
                     validateOnChange={false}
+                    validateOnMount={true}
                     validationSchema={ 
                         yup.object().shape({
                             email: yup.string().email('Invalid email').required('Enter your email address'),
-                            password: yup.string().required('Enter your passsword').matches(/^[a-zA-Z0-9_-]{5,15}$/, 'Should be 5-15 characters, lowercase, uppercase or numbers')
+                            password: yup.string().required('Enter your password').matches(/^[a-zA-Z0-9_-]{5,15}$/, 'Should be 5-15 characters, lowercase, uppercase or numbers')
                         })
                     }
-                    onSubmit={values => {
-                        valueDispatch({loader: {...dummies.modalProcess.loading}})
-                        axios.post(`${BASE_URL}api/login`, values).then((res) => {   
+                    onSubmit={values => {                        
+                        publicAxios.post(`${BASE_URL}api/login`, values).then((res) => {   
                             if ( res.data.status === 200) { 
-                                valueDispatch({loader: {...dummies.modalProcess.success, text: 'Login Successful, please wait to be redirected to dashboard'}})
+                                showAlert({alertType: 'success' , title: 'Success', message:  'Login Successful, please wait to be redirected to dashboard'})
                                 storeData('auth_token', res.data.token);
-                                API.get(`get-user`).then((res) => {
+                                axios.get(`get-user`).then((res) => {
                                     if ( isObject(res.data.data) && res.data.status === 200) {                                       
                                         storeData('basicData', {...res.data.data, isLoggedIn: true});
-                                        storeData('loader', loaderValues);
-                                        valueDispatch({ basicData: res.data.data });
                                         
                                         delay(() => {
+                                            closeAlert();
                                             navigation.navigate('Home')
-                                            valueDispatch({loader: {visible: false}})
                                         }, 2000);                                        
                                     }
-                                }).catch((err) => {
-                                    valueDispatch({ loader: { ...dummies.modalProcess.error, text: err.message }});
                                 });
                             }else {
-                                valueDispatch({loader: {...dummies.modalProcess.error, text: res.data.errors}});
+                                showAlert({alertType: 'error' , title: 'Error', message: res.data.errors});
                             }
-                        }).catch( (error) => {
-                            valueDispatch({loader: {...dummies.modalProcess.error, text: error.message}})                        })
+                        });
                     }}>
-                    {({ handleChange, handleBlur, handleSubmit, errors, touched, values }) => (
+                    {({ handleChange, handleBlur, handleSubmit, isValid, errors, touched, values }) => (
                     <View>
-                         <Loader
-                            handleRetry={handleSubmit}
-                            handler={() => valueDispatch({loader: {...valueState.loader, visible: false}})}
-                            props={valueState.loader}
-                        /> 
+
                         <Input 
                             placeholder='Email address' 
                             inputContainerStyle={styles.input} 
@@ -103,7 +86,7 @@ export const Signin = ({navigation}) => {
                         </Pressable>
 
 
-                        <Button onPress={handleSubmit} title='Sign in to your account' buttonStyle={styles.button} containerStyle={{marginTop: 40}}/>
+                        <Button onPress={handleSubmit} disabled={!isValid} title='Sign in to your account' buttonStyle={styles.button} containerStyle={{marginTop: 40}}/>
                         <View style={{flex: 1, alignItems: 'center'}}>
                             <View style={styles.rowFlex}>
                                 <Text>Don't have an account?</Text>

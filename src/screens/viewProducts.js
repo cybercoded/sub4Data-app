@@ -1,34 +1,28 @@
 import { View, Text, TouchableOpacity, Image, ScrollView } from 'react-native';
 import React from 'react';
 import { ListItem } from 'react-native-elements';
-import { API, BASE_URL, Loader, ScrollViewHeader, styles, theme } from '../components/global';
-import { dummies } from '../components/dummies';
-import { Context } from '../components/userContext';
-import { FlatList } from 'react-native';
+import { BASE_URL, ScrollViewHeader, styles } from '../components/global';
 import isObject from 'lodash/isObject';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import upperFirst from 'lodash/upperFirst';
+import { showAlert } from 'react-native-customisable-alert';
+import axios from 'axios';
 
 export const ViewProducts = ({ route, navigation }) => {
-    const { valueState, valueDispatch } = React.useContext(Context);
     const [availableServices, setAvailableServices] = React.useState([]);
     const { slug } = route.params;
     React.useEffect(() => {
-        valueDispatch({ loader: { ...dummies.modalProcess.loading, text: 'Fetching available services' } });
-        API.get(`view-product/${slug}`).then((res) => {
+        axios.get(`view-product/${slug}`).then((res) => {
             if (isObject(res.data)) {
-                valueDispatch({ loader: { ...dummies.modalProcess.hide } });
                 setAvailableServices(res.data.product);
+            } else {
+                showAlert({alertType: 'error' , title: 'Error', message: res.data.errors});
             }
-        })
-        .catch((error) => {
-            valueDispatch({ loader: { ...dummies.modalProcess.error, text: error } });
         });
     }, []);
 
     return (
         <>
-            <View style={styles.container}>
+            <View style={styles.centerContainer}>
                 <View style={{ flex: 2 }}>
                     <ScrollViewHeader
                         image= {{uri: `${BASE_URL}${availableServices[0]?.category?.image }`}}
@@ -70,11 +64,6 @@ export const ViewProducts = ({ route, navigation }) => {
                     </ScrollView>
                 </View>
             </View>
-
-            <Loader 
-                props={valueState.loader} 
-                handler={() => valueDispatch({ loader: { ...dummies.modalProcess.hide } })} 
-            />
         </>
     );
 };

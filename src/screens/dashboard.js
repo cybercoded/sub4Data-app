@@ -7,18 +7,23 @@ import React from "react";
 import {
     Badge,
   Icon,
-  ListItem,
   Text
 } from "react-native-elements";
-import { styles, theme } from "../components/global";
+import { getData, styles, theme } from "../components/global";
 import { dummies } from "../components/dummies";
-import { Context } from "../components/userContext";
 import { LinearGradient } from "expo-linear-gradient";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 export const Dashboard = ({ navigation }) => {
-  const { valueState, valueDispatch } = React.useContext(Context);
-  const [balanceIsVisible, setBalanceIsVisible] = React.useState(false)
+  const [balanceIsVisible, setBalanceIsVisible] = React.useState(false);
+  const [userData, setUserData] = React.useState([]);
+
+  React.useEffect(() => {
+
+    getData('basicData').then(res => {
+        setUserData(res);
+    });
+  }, [])
 
   return (
     <>
@@ -62,7 +67,7 @@ export const Dashboard = ({ navigation }) => {
                     }}
                 >
                     <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between', flexBasis: 50}}>
-                        <Badge value={valueState.basicData?.levels[0].name} status="success" />
+                        <Badge value={userData.levels?.[0].name} status="success" />
                         <Icon
                             name="eye"
                             type="ionicon"
@@ -79,10 +84,10 @@ export const Dashboard = ({ navigation }) => {
                             marginTop: 20,
                         }}
                     >
-                        ₦{ balanceIsVisible ? new Intl.NumberFormat().format(valueState.basicData?.balance) : '********'}
+                        ₦{ balanceIsVisible ? new Intl.NumberFormat().format(userData.balance) : '********'}
                     </Text>
                     <Text style={{ color: "#fff", fontSize: 16, fontWeight: "bold" }}>
-                        {valueState.basicData?.name}
+                        {userData.name}
                     </Text>
                 </LinearGradient>
                 </View>

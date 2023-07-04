@@ -1,21 +1,20 @@
 import { TouchableOpacity, View, ScrollView, ActivityIndicator, Dimensions } from 'react-native'
 import React, { Fragment, useEffect } from 'react'
 import { Badge, Button, Icon, Input, ListItem, Overlay, SearchBar, Text } from 'react-native-elements';
-import { API, Loader, MyDatePicker, ReferencePreviewer, styles, theme } from '../components/global';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Loader, MyDatePicker, ReferencePreviewer, styles, theme } from '../components/global';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import isEmpty from 'lodash/isEmpty';
-import { Context } from '../components/userContext';
+
 import { dummies } from '../components/dummies';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { showAlert } from 'react-native-customisable-alert';
 
 export const TransactionHistory = ({navigation}) => {
     const [histories, setHistories] = React.useState([]);
-    const { valueState, valueDispatch } = React.useContext(Context);
-    const [referenceScreenIsVisible, setReferenceScreenIsVisible] = React.useState(false);
+      const [referenceScreenIsVisible, setReferenceScreenIsVisible] = React.useState(false);
     const [filterScreenIsVisible, setFilterScreenIsVisible] = React.useState(false);
     const [isLoadingMore, setIsLoadingMore] = React.useState(false);
     const [isLoadingMoreTextResponse, setIsLoadingMoreTextResponse] = React.useState();
@@ -33,23 +32,17 @@ export const TransactionHistory = ({navigation}) => {
     const windowHeight = Dimensions.get('window').height;
 
     useEffect(() => {
-        valueDispatch({ loader: { ...dummies.modalProcess.loading } });      
-        API.get(`view-transactions/${limit}`).then((res) => {
+        axios.get(`view-transactions/${limit}`).then((res) => {
             if(res.data.status === 200) {
                 setHistories(res.data.data);
-                valueDispatch({ loader: { ...dummies.modalProcess.hide } });
             }
             else {
-                valueDispatch({ loader: { ...dummies.modalProcess.error, text: res.data.errors } });
+                showAlert({alertType: 'error' , title: 'Error', message: res.data.errors});
             }
-        }).catch((err) => {
-            valueDispatch({ loader: { ...dummies.modalProcess.error, text: err.message }});
         });
 
-        API.get(`view-product`).then((res) => {
+        axios.get(`view-product`).then((res) => {
             setProductList(res.data.product);
-        }).catch((err) => {
-            valueDispatch({ loader: { ...dummies.modalProcess.error, text: err.message }});
         });
     }, []);
 
@@ -64,7 +57,7 @@ export const TransactionHistory = ({navigation}) => {
         if (isLoadingMore === false) {
             setIsLoadingMore(true)
             setLimit(limit+10)
-            API.get(`view-transactions/${limit === 10 ? 20 : limit}`).then((res) => {
+            axios.get(`view-transactions/${limit === 10 ? 20 : limit}`).then((res) => {
                 if(res.data.status === 200) {
                     setHistories([...res.data.data, ...histories]);
                     scrollRef.current.scrollTo({x: 0, y: 0, animated: true});                  
@@ -73,8 +66,6 @@ export const TransactionHistory = ({navigation}) => {
                 else {
                     setIsLoadingMoreTextResponse(res.data.errors);
                 }
-            }).catch((err) => {
-                valueDispatch({ loader: { ...dummies.modalProcess.error, text: err.message }});
             });
         }
     };
@@ -87,10 +78,8 @@ export const TransactionHistory = ({navigation}) => {
     };
 
     const fetchServices = () => {
-        API.get(`view-services/${selectedProduct}`).then((res) => {
+        axios.get(`view-services/${selectedProduct}`).then((res) => {
             setServiceList(res.data.services);
-        }).catch((err) => {
-            valueDispatch({ loader: { ...dummies.modalProcess.error, text: err.message }});
         });
     };
 
@@ -152,10 +141,7 @@ export const TransactionHistory = ({navigation}) => {
                     
                 </ScrollView>
             </View>
-            <Loader 
-                props={valueState.loader} 
-                handler={() => valueDispatch({ loader: { ...dummies.modalProcess.hide } })} 
-            />
+
             <ReferencePreviewer
                 referenceScreenIsVisible={referenceScreenIsVisible}
                 singleTransaction={singleTransaction}
@@ -172,17 +158,13 @@ export const TransactionHistory = ({navigation}) => {
                         }}
                         onSubmit={(values) => {
                             setFilterScreenIsVisible(false);
-                            valueDispatch({ loader: { ...dummies.modalProcess.loading } });      
-                            API.post(`filter-transactions`, values).then((res) => {
+                            axios.post(`filter-transactions`, values).then((res) => {
                                 if(res.data.status === 200) {
                                     setHistories(res.data.data);
-                                    valueDispatch({ loader: { ...dummies.modalProcess.hide } });                                    
                                 }
                                 else {
-                                    valueDispatch({ loader: { ...dummies.modalProcess.error, text: res.data.errors } });
+                                    showAlert({alertType: 'success' , title: 'Success', message: res.data.errors});
                                 }
-                            }).catch((err) => {
-                                valueDispatch({ loader: { ...dummies.modalProcess.error, text: err.message }});
                             });
                         }}
                     >

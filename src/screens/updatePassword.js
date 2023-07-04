@@ -1,35 +1,32 @@
 import React from "react";
-import { API, Loader, styles } from "../components/global";
-import { Context } from "../components/userContext";
+import { Loader, styles } from "../components/global";
+
 import { delay } from "lodash";
 import { View } from "react-native";
 import { Formik } from "formik";
 import { Text, Input, Button } from "react-native-elements";
 import { dummies } from '../components/dummies';
 import * as yup from "yup";
+import { closeAlert, showAlert } from 'react-native-customisable-alert';
 
 
 export const UpdatePassword = ({navigation}) => {
 
-    const { valueState, valueDispatch } = React.useContext(Context);
-    const formRef = React.useRef();
+      const formRef = React.useRef();
 
     const [passwordState, setPasswordState] = React.useState();
 
     const handleChangePassword = () => {  
-        valueDispatch({ loader: { ...dummies.modalProcess.loading } });
-        API.put(`update-password`, {password: passwordState.newPassword}).then((res) => {
+        axios.put(`update-password`, {password: passwordState.newPassword}).then((res) => {
             if (res.data.status === 200) {
-                valueDispatch({ loader: { ...dummies.modalProcess.success, text: res.data.message}});
-                delay(() => {                            
-                    valueDispatch({ loader: { ...dummies.modalProcess.hide } });
+                showAlert({alertType: 'success' , title: 'Success', message: res.data.message});
+                delay(() => { 
+                    closeAlert();                           
                     navigation.navigate('Home');
                 }, 1000)
             } else {
-                valueDispatch({ loader: { ...dummies.modalProcess.error, text: res.data.errors}});   
+                showAlert({alertType: 'error' , title: 'Error', message: res.data.errors});   
             }
-        }).catch((err) => {
-            valueDispatch({ loader: { ...dummies.modalProcess.error, text: err.message }});
         });
     };
 
@@ -57,16 +54,18 @@ export const UpdatePassword = ({navigation}) => {
                         .matches(passwordRules, { message: "Min 5 characters, 1 upper case letter, 1 lower case letter, 1 numeric digit" })            
                 })}
                 onSubmit={(values) => {
-                    valueDispatch({ loader: { ...dummies.modalProcess.loading } });
-                    API.get(`verify-password/${values.oldPassword}`).then((res) => {
+                    axios.get(`verify-password/${values.oldPassword}`).then((res) => {
                         if (res.data.status === 200) {
-                            valueDispatch({ loader: { ...dummies.modalProcess.warning }});
+                            showAlert({
+                                alertType: 'warning' , 
+                                title: 'warning', 
+                                message: 'Are you sure to continue', 
+                                onPress: () => handleChangePassword
+                            });
                             setPasswordState(values);
                         } else {
-                            valueDispatch({ loader: { ...dummies.modalProcess.error, text: 'Incorrect Old Password, try again'}});   
+                            showAlert({alertType: 'error' , title: 'Error', message: 'Incorrect Old Password, try again'});   
                         }
-                    }).catch((err) => {
-                        valueDispatch({ loader: { ...dummies.modalProcess.error, text: err.message}});
                     });
                 }}
             >
@@ -113,12 +112,6 @@ export const UpdatePassword = ({navigation}) => {
             </Formik>
             
         </View>
-            <Loader
-                handleWarning={() => handleChangePassword() }
-                handleRetry={() =>  formRef.current.handleSubmit() }
-                handler={() => valueDispatch({ loader: { ...dummies.modalProcess.hide}})}
-                props={valueState.loader}
-            />        
     </>
     );
 };

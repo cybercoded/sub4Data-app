@@ -1,6 +1,6 @@
 import React from "react";
-import { API, BASE_URL, Loader, styles } from "../components/global";
-import { Context } from "../components/userContext";
+import { BASE_URL, Loader, styles } from "../components/global";
+
 import { delay } from "lodash";
 import { View } from "react-native";
 import { Formik } from "formik";
@@ -8,26 +8,25 @@ import { Text, Input, Button } from "react-native-elements";
 import { dummies } from '../components/dummies';
 import * as yup from "yup";
 import axios from "axios";
+import { closeAlert, showAlert } from "react-native-customisable-alert";
 
 
 export const NewPassword = ({route, navigation}) => {
     const { email, otp } = route.params;
-    const { valueState, valueDispatch } = React.useContext(Context);
-    const formRef = React.useRef();
+      const formRef = React.useRef();
 
     const [passwordState, setPasswordState] = React.useState();
 
     const handleChangePassword = () => {  
-        valueDispatch({ loader: { ...dummies.modalProcess.loading } });
-        axios.put(`${BASE_URL}api/verify-otp-and-reset`, {password: passwordState.password2, email: email, otp: otp}).then((res) => {
+        publicAxios.put(`${BASE_URL}api/verify-otp-and-reset`, {password: passwordState.password2, email: email, otp: otp}).then((res) => {
             if (res.data.status === 200) {
-                valueDispatch({ loader: { ...dummies.modalProcess.success, text: res.data.message+ ' Proceed to Login'}});
-                delay(() => {                            
-                    valueDispatch({ loader: { ...dummies.modalProcess.hide } });
+                showAlert({alertType: 'success' , title: 'Success', message: res.data.message+ ' Proceed to Login'});
+                delay(() => {
+                    closeAlert();                            
                     navigation.navigate('Signin');
                 }, 1000)
             } else {
-                valueDispatch({ loader: { ...dummies.modalProcess.error, text: res.data.errors}});   
+                showAlert({alertType: 'error' , title: 'Error', message: res.data.errors});   
             }
         });
     };
@@ -40,8 +39,8 @@ export const NewPassword = ({route, navigation}) => {
             <Formik
                 innerRef={formRef}
                 initialValues={{
-                    password1: 'Tommy01',
-                    password2: 'Tommy01'
+                    password1: '',
+                    password2: ''
                 }}
                 validateOnChange={true}
                 validateOnMount={true}
@@ -57,7 +56,12 @@ export const NewPassword = ({route, navigation}) => {
                 })}
                 onSubmit={(values) => {
                     setPasswordState(values);
-                    valueDispatch({ loader: { ...dummies.modalProcess.warning } });
+                    showAlert({
+                        alertType: 'warning' , 
+                        title: 'warning', 
+                        message: 'Are you sure to continue', 
+                        onPress: () => handleChangePassword
+                    });
                 }}
             >
                 {({ handleChange, handleBlur, handleSubmit, isValid, errors, touched, values}) => (
@@ -102,13 +106,7 @@ export const NewPassword = ({route, navigation}) => {
                 )}
             </Formik>
             
-        </View>
-            <Loader
-                handleWarning={() => handleChangePassword() }
-                handleRetry={() =>  formRef.current.handleSubmit() }
-                handler={() => valueDispatch({ loader: { ...dummies.modalProcess.hide}})}
-                props={valueState.loader}
-            />        
+        </View>  
     </>
     );
 };

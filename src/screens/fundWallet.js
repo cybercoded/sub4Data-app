@@ -3,7 +3,6 @@ import { styles, theme } from "../components/global";
 import { TouchableOpacity, View, Image } from "react-native";
 import { Icon, ListItem } from "react-native-elements";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { dummies } from "../components/dummies";
 
 export const FundWallet = ({route, navigation}) => {
     const { slug } = route.params;

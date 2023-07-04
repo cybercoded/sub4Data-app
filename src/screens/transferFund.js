@@ -1,40 +1,36 @@
 import { Formik } from "formik";
 import React from "react";
-import { API, BASE_URL, Loader, styles } from "../components/global";
-import { Context } from "../components/userContext";
+import { BASE_URL, Loader, styles } from "../components/global";
 import { View } from "react-native";
 import { Button, Input } from "react-native-elements";
 import * as yup from "yup";
 import { dummies } from "../components/dummies";
 import axios from "axios";
 import delay from "lodash/delay";
+import { closeAlert, showAlert } from "react-native-customisable-alert";
 
 export const TransferFund = ({navigation}) => {
     const [submitState, setSubmitState] = React.useState();
-    const { valueState, valueDispatch } = React.useContext(Context);
-    const [transferReceiverId, setTransferReceiverId] = React.useState();
+      const [transferReceiverId, setTransferReceiverId] = React.useState();
     const formRef = React.useRef();
 
     const handleTransferFund = () => {   
-        valueDispatch({ loader: { ...dummies.modalProcess.loading}})
-        API.put(`transfer-fund`, {...submitState, user_id: transferReceiverId}).then((res) => {
+        axios.put(`transfer-fund`, {...submitState, user_id: transferReceiverId}).then((res) => {
             if (res.data.status === 200) {
-                valueDispatch({ loader: { ...dummies.modalProcess.success, text: res.data.message}});
+                showAlert({alertType: 'success' , title: 'Success', message: res.data.message});
                 delay(() => {
-                    valueDispatch({ loader: { ...dummies.modalProcess.hide}});
+                    closeAlert();
                     navigation.navigate('Home');
                 }, 1000)
             } else {
-                valueDispatch({ loader: { ...dummies.modalProcess.error, text: res.data.errors}});
+                showAlert({alertType: 'error' , title: 'Error', message: res.data.errors});
             }
-        }).catch((err) => {
-            valueDispatch({ loader: { ...dummies.modalProcess.error, text: err.message }});
         });
     };
 
     return (
         <>
-            <View styles={styles.container}>
+            <View styles={styles.centerContainer}>
                 <View style={{flex: 1, alignItems: 'center'}}>
                     <Formik
                         innerRef={formRef}
@@ -57,15 +53,13 @@ export const TransferFund = ({navigation}) => {
                         onSubmit={(values) => {
                             setSubmitState(values);
                             valueDispatch({ loader: { ...dummies.modalProcess.loading}});
-                            axios.get(`${BASE_URL}api/verify-user-email/${values.email}`).then((res) => { 
+                            publicAxios.get(`${BASE_URL}api/verify-user-email/${values.email}`).then((res) => { 
                                 if (res.data.status === 200) {              
                                     valueDispatch({ loader: { ...dummies.modalProcess.warning } });
                                     setTransferReceiverId(res.data.data.user_id)
                                 } else {
                                     valueDispatch({ loader: { ...dummies.modalProcess.error, text: res.data.errors }});
                                 }
-                            }).catch((err) => {
-                                valueDispatch({ loader: { ...dummies.modalProcess.error, text: err.message }});
                             });
                         }}
                     >
@@ -107,13 +101,6 @@ export const TransferFund = ({navigation}) => {
                     </Formik>
                 </View>
             </View>
-
-            <Loader
-                handleWarning={() => handleTransferFund() }
-                handleRetry={() =>  formRef.current.handleSubmit() }
-                handler={() => valueDispatch({ loader: { ...dummies.modalProcess.hide}})}
-                props={valueState.loader}
-            />  
         </>
     );
 }

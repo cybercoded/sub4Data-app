@@ -1,23 +1,13 @@
 import {
     View,
     Text,
-    Image,
-    TouchableOpacity,
-    ScrollView,
-    Alert,
   } from "react-native";
-  import React, { useEffect, useState } from "react";
+  import React from "react";
   import {
-    API,
-    BASE_URL,
-    getData,
-    LOCAL_API,
-    storeData,
     styles,
     theme,
   } from "../components/global";
-  import { Button, Card, Icon, Input } from "react-native-elements";
-  import { dummies } from "../components/dummies";
+  import { Icon } from "react-native-elements";
   
   export const BankTransfer = ({ route, navigation }) => {
     
@@ -35,7 +25,7 @@ import {
             Fund wallet with card
           </Text>
           <Text style={{ marginVertical: 10, textAlign: 'center' }}>
-            It's easy, just profide your card details you will receive an OTP in your email or phone number linked with your bank account
+            It's easy, just provide your card details you will receive an OTP in your email or phone number linked with your bank account
           </Text>
           <Text style={{ fontSize: 100 }}>Wallet Balance = 0.0</Text>
         </View>

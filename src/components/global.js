@@ -1,19 +1,17 @@
-import { View, StyleSheet, Modal, TouchableOpacity, ActivityIndicator, Dimensions} from 'react-native'
+import { View, StyleSheet, TouchableOpacity, ActivityIndicator, Dimensions} from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { Button, ButtonGroup, Card, Dialog, Divider, Icon, ListItem, Image, Text, Overlay } from 'react-native-elements'
+import { Button, ButtonGroup, Card, Dialog, Icon, ListItem, Image, Text, Overlay } from 'react-native-elements'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import axios from 'axios';
+import {axios as publicAxios} from 'axios';
+
 import { dummies } from './dummies';
 import { DrawerContentScrollView } from '@react-navigation/drawer';
-import { useNavigation, useNavigationState, useRoute } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { Picker } from '@react-native-picker/picker';
 
 
-export const BASE_URL = 'https://sub4data.com.ng/laravel/'
-
-export const API_URL = 'http://tommytop.atwebpages.com/'
-
-export const LOCAL_API = 'http://localhost/tommytop/handle/jsons/'
+// export const BASE_URL = 'https://sub4data.com.ng/laravel/'
+export const BASE_URL = 'http://localhost:8000/'
 
 export const theme = {
 	colors: {
@@ -50,35 +48,7 @@ export const getData = async (key) => {
 	} catch (err) {
 		console.error(err)
 	}
-}
-
-export const API = axios.create();
-
-API.interceptors.request.use(
-	async (config) => {
-		config.baseURL = BASE_URL+"api/v1/";
-		config.headers.post['Content-Type'] = 'application/json';
-		config.headers.post['Accept'] = 'application/json';
-		config.withCredentials = true;
-    	const token = JSON.parse(await AsyncStorage.getItem('auth_token'));
-    	config.headers.Authorization = token ? `Bearer ${token}` : '';
-		
-		return config;
-	},
-
-	error =>  Promise.reject(error)
-);
-
-API.interceptors.response.use(
-	function (response) {
-		return response;
-	},
-	function (error) {
-		// Alert.alert(error.message)
-		
-		return Promise.reject(error);
-	}
-);
+};
 
 export const PinVerifyPad = ({ allProps }) => {
 	const { pinInputText, handleSubmit, setPinInputText, pinInput, pinPadDisability, setPinPadDisability } = allProps

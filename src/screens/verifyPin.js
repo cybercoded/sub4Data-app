@@ -3,12 +3,12 @@ import { PinPad } from '../components/pinPad';
 import delay from 'lodash/delay';
 import { dummies } from '../components/dummies';
 import isObject from 'lodash/isObject';
-import { Context } from '../components/userContext';
+
 import { getData, theme } from '../components/global';
 import { Button, Overlay } from 'react-native-elements';
+import { closeAlert, showAlert } from 'react-native-customisable-alert';
 
 export const VerifyPin = ({action, title, closePinScreen, isVisible}) => {
-    const {valueState, valueDispatch} = React.useContext(Context);
     const [pinCode, setPinCode] = React.useState([]);
 
     const verifyPinHandler = (code) => {
@@ -23,20 +23,17 @@ export const VerifyPin = ({action, title, closePinScreen, isVisible}) => {
         }
 
         if(newPinAttempts.length === 4 ){
-            valueDispatch({loader: {...dummies.modalProcess.loading}});
             getData('basicData').then(res => {
                 if( res.pin == newPinAttempts.join('') ) {                    
-                    valueDispatch({loader: {...dummies.modalProcess.success, text: 'PIN was matched, Please wait to continue with your transaction'}});
+                    showAlert({alertType: 'success' , title: 'Success', message:  'PIN was matched, Please wait to continue with your transaction'});
                     delay(() => {
-                        valueDispatch({loader: {...dummies.modalProcess.hide}});
+                        closeAlert();
                         action && action();
                         closePinScreen && closePinScreen();
                     }, 1000);
                 }else {
-                    valueDispatch({loader: {...dummies.modalProcess.error, text: 'Incorrect PIN, please try again'}});
+                    showAlert({alertType: 'error' , title: 'Error', message: 'Incorrect PIN, please try again'});
                 }
-            }).catch(error => {
-                valueDispatch({loader: {...dummies.modalProcess.error, text: error}});
             }).finally(() => {
                 setPinCode([])
             });

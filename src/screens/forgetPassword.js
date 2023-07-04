@@ -1,20 +1,17 @@
 import React from 'react';
-import { Image, Modal, Pressable, TextInput, View } from 'react-native';
+import { View } from 'react-native';
 import { Formik } from 'formik';
-import { API, API_URL, BASE_URL, errorHandler, getData, Loader, ScrollViewHeader, storeData, styles, theme } from '../components/global';
+import { BASE_URL,ScrollViewHeader, styles } from '../components/global';
 import { Button, Icon, Input, Text } from 'react-native-elements';
 import * as yup from 'yup';
-import { delay, isObject } from 'lodash';
+import delay from 'lodash/delay';
 import { dummies } from '../components/dummies';
-import axios from 'axios';
-import { Context, initialValues as loaderValues } from '../components/userContext';
+import {axios as publicAxios} from 'axios';
+import { closeAlert, showAlert } from 'react-native-customisable-alert';
 
-export const ForgetPassword = ({navigation}) => {
-
-    const { valueState, valueDispatch } = React.useContext(Context);
-
+export const ForgetPassword = ({navigation}) => {  
     return(
-        <View style={styles.container}>
+        <View style={styles.centerContainer}>
             <View style={{flex: 1, width: '100%'}}>
 
                 <View style={{marginBottom: 30}}>
@@ -26,7 +23,7 @@ export const ForgetPassword = ({navigation}) => {
 
                 <Formik
                     initialValues={{
-                        email: 'cafeat9ja@gmail.coms'
+                        email: ''
                     }}
                     validateOnChange={true}
                     validateOnMount={true}
@@ -36,21 +33,21 @@ export const ForgetPassword = ({navigation}) => {
                         })
                     }
                     onSubmit={values => {
-                        valueDispatch({loader: {...dummies.modalProcess.loading}})
-                        axios.get(`${BASE_URL}api/verify-user-email/${values.email}`).then((res) => {   
+                        
+                        publicAxios.get(`${BASE_URL}api/verify-user-email/${values.email}`).then((res) => {   
                             if ( res.data.status === 200) {
-                                axios.put(`${BASE_URL}api/resend-otp`, {email: values.email}).then((res) => {
-                                    valueDispatch({loader: {...dummies.modalProcess.success, text: res.data.message}})
+                                publicAxios.put(`${BASE_URL}api/resend-otp`, {email: values.email}).then((res) => {
+                                    showAlert({alertType: 'success' , title: 'Success', message:  res.data.message});
                                     delay(() => {
+                                        closeAlert();
                                         navigation.navigate('VerifyOtpPassword', {email: values.email})
-                                        valueDispatch({loader: {...dummies.modalProcess.hide}})
                                     }, 1000);
                                 });
                             }else {
-                                valueDispatch({loader: {...dummies.modalProcess.error, text: res.data.errors}});
+                                showAlert({alertType: 'error' , title: 'Error', message: res.data.errors});
                             }
                         }).catch( (error) => {
-                            valueDispatch({loader: {...dummies.modalProcess.error, text: error.message}});
+                            showAlert({alertType: 'error' , title: 'Error', message: error.message});
                         });
                     }}>
                     {({ handleChange, handleBlur, handleSubmit, isValid, errors, touched, values }) => (

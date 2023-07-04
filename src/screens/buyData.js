@@ -1,31 +1,37 @@
-import { View, Image, Button as MyButton, ScrollView, TouchableOpacity, Modal, Alert } from 'react-native';
+import { View } from 'react-native';
 import React from 'react';
-import { API, BASE_URL, styles, theme, Loader, PinVerifyPad, ScrollViewHeader, getData, storeData } from '../components/global';
-import { Button, Input, Switch, BottomSheet, Text, ButtonGroup, Overlay } from 'react-native-elements';
+import { styles, theme, Loader, ScrollViewHeader, getData, storeData } from '../components/global';
+import { Button, Input, Switch, Text, ButtonGroup, Overlay } from 'react-native-elements';
 import { dummies } from '../components/dummies';
-import { Context } from '../components/userContext';
 import delay from 'lodash/delay';
 import { Formik } from 'formik';
 import * as yup from "yup";
-import upperFirst from "lodash/upperFirst"
 import capitalize from "lodash/capitalize";
 import { VerifyPin } from './verifyPin';
+import axios from 'axios';
+import { closeAlert } from 'react-native-customisable-alert';
 
 export const BuyData = ({ route, navigation }) => {
     const { slug, api_product_id, image, amount, name } = route.params;
     const [value, setValue] = React.useState(false);
-    const { valueState, valueDispatch } = React.useContext(Context);
     const [pinScreen, setPinScreen] = React.useState(false);
     const formRef = React.useRef();
 
+    const [userData, setUserData] = React.useState([]);
+    React.useEffect(() => {
+        getData('basicData').then(res => {
+            setUserData(res);
+        });
+    }, []);
+
     return (
         <>
-            <View style={styles.container}>
+            <View style={styles.centerContainer}>
                 <View style={{flex: 2}}>
                     <ScrollViewHeader
                         image={image}
                         title={`Purchase ${capitalize(name)}`}
-                        subTitle={`Wallet Balance = ${valueState.basicData?.balance}`}
+                        subTitle={`Wallet Balance = ${userData.balance}`}
                     />
                 </View>
 
@@ -34,7 +40,7 @@ export const BuyData = ({ route, navigation }) => {
                         innerRef={formRef}
                         initialValues={{
                             amount: amount,
-                            phone: '09036989565',
+                            phone: '',
                             api_product_id: api_product_id,
                         }}
                         validateOnChange={true}
@@ -48,34 +54,19 @@ export const BuyData = ({ route, navigation }) => {
                             
                         })}
                         onSubmit={(values, actions) => {                    
-                            valueDispatch({ loader: { ...dummies.modalProcess.loading} });
                             setPinScreen(false);
                             storeData('pinScreen', false);
-                            API.post(`buy-services.php?userId=${valueState.basicData.userId}&service=datashare`, values).then((res) => {
+                            axios.post(`buy-services.php&service=datashare`, values).then((res) => {
                                 if (res.data.status === true) {
-                                    valueDispatch({
-                                        loader: { ...dummies.modalProcess.success,
-                                            title: res.data.message,
-                                            text: 'please wait to be directed to Dashboard'
-                                        }
-                                    });
+                                    showAlert({alertType: 'success' , title: 'Success', message: 'please wait to be directed to Dashboard'});
 
                                     delay(() => {
-                                        valueDispatch({loader: {...dummies.modalProcess.hide}});
+                                        closeAlert();
                                         navigation.navigate('Dashboard');
                                     }, 2000);
                                 } else {
-                                    valueDispatch({loader: {
-                                            ...dummies.modalProcess.error,
-                                            text: res.data.message + ' Try again later'
-                                        }
-                                    });
+                                    showAlert({alertType: 'error' , title: 'Error', message: res.data.message + ' Try again later'});
                                 }
-                            }).catch((error) => {
-                                valueDispatch({loader: {
-                                    ...dummies.modalProcess.error,
-                                    text: error.message
-                                }})
                             }).then(() => {
                                 actions.setSubmitting(false);
                             })
@@ -145,11 +136,6 @@ export const BuyData = ({ route, navigation }) => {
                     </Formik>
                 </View>
             </View>
-            <Loader
-                handleRetry={() =>  formRef.current.handleSubmit() }
-                handler={() => valueDispatch({loader: {...dummies.modalProcess.hide}})}
-                props={valueState.loader}
-            />
             
             <VerifyPin 
                 isVisible={pinScreen} 

@@ -1,6 +1,6 @@
 import { TouchableOpacity, View } from 'react-native'
 import React from 'react'
-import { API, Loader, storeData, styles, theme } from './global';
+import { Loader, storeData, styles, theme } from './global';
 import { Button, Text, Icon } from 'react-native-elements';
 import indexOf from 'lodash/indexOf';
 import delay from 'lodash/delay';
@@ -17,7 +17,7 @@ export const PinPad = (props) => {
 
     return (
       <>
-        <View style={styles.container}>
+        <View style={styles.centerContainer}>
             <Loader
                 props={valueState.loader}
                 handler={() => valueDispatch({loader: {...dummies.modalProcess.hide}})}

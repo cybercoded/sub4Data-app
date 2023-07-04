@@ -1,12 +1,13 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 import { Button, Icon, Input } from 'react-native-elements';
-import { API, Loader, storeData, styles, theme } from '../components/global';
+import { Loader, storeData, styles, theme } from '../components/global';
 import { Formik } from 'formik';
 import * as yup from "yup";
-import { Context } from '../components/userContext';
+
 import { dummies } from '../components/dummies';
 import delay from 'lodash/delay';
+import { closeAlert, showAlert } from 'react-native-customisable-alert';
 
 export const UpdateProfile = ({navigation}) => {
     const formRef = React.useRef();
@@ -30,29 +31,22 @@ export const UpdateProfile = ({navigation}) => {
                     })}
 
                     onSubmit={(values) => {
-                        valueDispatch({loader: {...dummies.modalProcess.loading}});
-                        API.post(`update-user`, values).then((res) => {
+                        axios.post(`update-user`, values).then((res) => {
                             if ( res.data.status === 200 ) {
-                                valueDispatch({loader: {...dummies.modalProcess.success, text: res.data.message+', please wait to be refreshed'}});
-                                API.get(`get-user`).then((res) => {
+                                showAlert({alertType: 'success' , title: 'Success', message:  res.data.message+', please wait to be refreshed'});
+                                axios.get(`get-user`).then((res) => {
                                     if ( res.data.status === 200) {                                       
                                         storeData('basicData', {...res.data.data});
-                                        valueDispatch({loader: {...dummies.modalProcess.success, text: res.data.message}});                                
+                                        showAlert({alertType: 'success' , title: 'Success', message:  res.data.message});                                
                                         delay(() => {
-                                            valueDispatch({loader: {...dummies.modalProcess.hide}});
+                                            closeAlert();
                                             navigation.navigate('Home');
                                         }, 2000);                                
                                     }
-                                }).catch((err) => {
-                                    valueDispatch({ loader: { ...dummies.modalProcess.error, text: err.message }});
                                 });
                             } else {
-                                valueDispatch({loader: {...dummies.modalProcess.error, text: res.data.errors}});
+                                showAlert({alertType: 'error' , title: 'Error', message: res.data.errors});
                             }
-                        })
-                        .catch((err) => {
-                            valueDispatch({loader: {...dummies.modalProcess.error, text: err.message}});
-                            console.error(err.message);
                         });
                     }}
                 >
@@ -91,11 +85,6 @@ export const UpdateProfile = ({navigation}) => {
                     )}
                 </Formik>
             </View>
-            <Loader
-                handleRetry={() => formRef.current.handleSubmit()}
-                handler={() => valueDispatch({ loader: { ...dummies.modalProcess.hide } }) }
-                props={valueState.loader}
-            />
         </>
     )
 };

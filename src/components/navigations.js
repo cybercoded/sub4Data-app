@@ -9,14 +9,12 @@ import { BuyElectricity } from "../screens/buyElectricity";
 import { Settings } from "../screens/settings";
 import { Registration } from "../screens/registration";
 import { Signin } from "../screens/Signin";
-import { Index } from "../screens";
 import { CreatePin } from "../screens/createPin";
 import { Logout } from "../screens/logOut";
 import { Welcome } from "../screens/welcome";
 import { TransactionHistory } from "../screens/transactionHistory";
 import { BankTransfer } from "../screens/bankTransfer";
-import { GoBackIcon, MenuView, getData, storeData, theme } from "./global";
-import { Context, initialValues } from "./userContext";
+import { GoBackIcon, MenuView, theme } from "./global";
 import { VerifyPin } from "../screens/verifyPin";
 import { UpdateProfile } from "../screens/updateProfile";
 import { ViewProducts } from "../screens/viewProducts";
@@ -24,9 +22,6 @@ import { BuyBill } from "../screens/buyBill";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { createDrawerNavigator} from '@react-navigation/drawer';
-import { dummies } from "./dummies";
-import { Image } from "react-native";
-import { Icon } from "react-native-elements";
 import { AutomatedBanks } from "../screens/automatedBanks";
 import { FundWallet } from "../screens/fundWallet";
 import { MerchantPayment } from "../screens/merchantPayment";
@@ -43,15 +38,6 @@ import TransferFund from "../screens/transferFund";
 
 export const Navigations = () => {
   const Stack = createNativeStackNavigator();
-  const { valueState, valueDispatch } = React.useContext(Context);
-
-  React.useEffect(() => {
-    getData("basicData").then((res) => {
-      storeData("loader", initialValues.loader);
-
-      valueDispatch({ basicData: res });
-    });
-  }, [valueState.id]);
 
   const Tab = createBottomTabNavigator();
   function BottomHomeTabs() {
@@ -128,7 +114,7 @@ export const Navigations = () => {
     <>
       <NavigationContainer>
         <Stack.Navigator            
-          initialRouteName="TransferFund"
+          initialRouteName="BuyAirtime"
           screenOptions={{
             headerStyle: { backgroundColor: theme.colors.primary },
             headerTitleStyle: { color: 'white' },
@@ -207,11 +193,6 @@ export const Navigations = () => {
             component={Welcome}
           />
           <Stack.Screen
-            name="Index"
-            component={Index}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
             name="Dashboard"
             component={Dashboard}
             options={{ headerShown: false }}
@@ -236,6 +217,14 @@ export const Navigations = () => {
             name="BuyAirtime"
             component={BuyAirtime}
             options={{ title: "Buy Airtime" }}
+            initialParams={{
+                id: 1,
+                api_product_id: 7,
+                image: 'image',
+                slug: 'airtime',
+                amount: 200,
+                name: "200 airtime"
+            }}
           />
           <Stack.Screen
             name="ViewServices"

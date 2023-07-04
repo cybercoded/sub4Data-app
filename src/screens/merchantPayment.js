@@ -1,16 +1,14 @@
 import React from "react";
-import { API, Loader, styles } from "../components/global";
+import { styles } from "../components/global";
 import { View, Text, Image } from "react-native";
 import { dummies } from "../components/dummies";
 import { Button, Divider, Input } from "react-native-elements";
 import { Formik } from "formik";
 import * as yup from 'yup';
-import { Context } from "../components/userContext";
-import WebView from "react-native-webview";
+import { showAlert } from 'react-native-customisable-alert';
 
 export const MerchantPayment = ({ navigation }) => {
-    const { valueState, valueDispatch } = React.useContext(Context);
-    const [charges, setCharges] = React.useState(3);
+      const [charges, setCharges] = React.useState(3);
     const [discount, setDiscount] = React.useState(3);
     const [total, setTotal] = React.useState();
     const formRef = React.useRef();
@@ -33,30 +31,16 @@ export const MerchantPayment = ({ navigation }) => {
                         .required("Amount is required")
                     })}
                     onSubmit={(values) => {
-                        valueDispatch({ loader: { ...dummies.modalProcess.loading } });
-                        API.post(`merchant-pay`, values).then((res) => {
+                        axios.post(`merchant-pay`, values).then((res) => {
                             if (res.data.status === 200 &&  res.data.url) {
-                                valueDispatch({loader: { ...dummies.modalProcess.hide }});
                                 navigation.navigate("WebViewComponent", {url: res.data.url});
                             } else {
-                                valueDispatch({loader: {...dummies.modalProcess.error, text: `Internal error: Code[${res.data.message}]`} });
+                                showAlert({alertType: 'error' , title: 'Error', message: `Internal error: Code[${res.data.message}]`});
                             }
-                        })
-                        .catch((error) => {
-                            valueDispatch({loader: {...dummies.modalProcess.error, text: error.message }});
                         });
                     }}
                 >
-                    {({
-                        handleChange,
-                        handleBlur,
-                        handleSubmit,
-                        setFieldValue,
-                        isValid,
-                        errors,
-                        touched,
-                        values,
-                    }) => (
+                    {({ handleChange, handleBlur, handleSubmit, setFieldValue, isValid, errors, touched, values }) => (
                     <>
                         <View style={{ flex: 8, width: "100%" }}>
                             <Input
@@ -107,15 +91,7 @@ export const MerchantPayment = ({ navigation }) => {
                     </>
                     )}
                 </Formik>
-            </View>
-            <Loader
-                handleRetry={() => formRef.current.handleSubmit()}
-                handler={() =>
-                valueDispatch({ loader: { ...dummies.modalProcess.hide } })
-                }
-                props={valueState.loader}
-            />
-            
+            </View>            
         </>
   );
 };

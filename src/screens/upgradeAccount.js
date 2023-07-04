@@ -1,62 +1,49 @@
 import { Alert, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import {Button, Icon, ListItem } from 'react-native-elements';
-import { API, Loader, getData, storeData, styles, theme } from '../components/global';
-import { Context } from '../components/userContext';
+import { Loader, getData, storeData, styles, theme } from '../components/global';
+
 import { dummies } from '../components/dummies';
 import delay from 'lodash/delay';
+import { closeAlert, showAlert } from 'react-native-customisable-alert';
 
 
 export const UpgradeAccount = ({route, navigation}) => {
-    const { valueState, valueDispatch } = React.useContext(Context);
-    const [levelLists, setLevelLists] = React.useState([]);
+      const [levelLists, setLevelLists] = React.useState([]);
     const [currentLevel, setCurrentLevel] = React.useState();
     const [selectedLevel, setSelectedLevel] = React.useState();
 
     React.useEffect(() => {
-        valueDispatch({ loader: { ...dummies.modalProcess.loading } });
-        API.get(`view-levels`).then((res) => {
+        axios.get(`view-levels`).then((res) => {
             if (res.data.status === 200) {
                 setLevelLists(res.data.levels);
-                valueDispatch({ loader: { ...dummies.modalProcess.hide } });
             } else {
-                valueDispatch({ loader: { ...dummies.modalProcess.error, text: res.data.errors } });
+                showAlert({alertType: 'error' , title: 'Error', message: res.data.errors });
             }            
-        }).catch((err) => {
-            valueDispatch({ loader: { ...dummies.modalProcess.error, text: err } });
         });
 
         getData('basicData').then((res) => {
             setCurrentLevel(res.level)
-        }).catch((err) => {
-            valueDispatch({ loader: { ...dummies.modalProcess.error, text: err.message }});
         });
     }, []);
 
     const handleUpgrade = () => {
-        valueDispatch({loader: {...dummies.modalProcess.loading}});
-        API.post(`upgrade-user`, {level: selectedLevel}).then((res) => {
+        axios.post(`upgrade-user`, {level: selectedLevel}).then((res) => {
             if ( res.data.status === 200 ) {
-                valueDispatch({loader: {...dummies.modalProcess.success, text: res.data.message+', please wait to be refreshed'}});
-                API.get(`get-user`).then((res) => {
+                showAlert({alertType: 'success' , title: 'Success', message:  res.data.message+', please wait to be refreshed'});
+                axios.get(`get-user`).then((res) => {
                     if ( res.data.status === 200) {                                       
                         storeData('basicData', {...res.data.data});
-                        valueDispatch({loader: {...dummies.modalProcess.success, text: res.data.message}});                                
+                        showAlert({alertType: 'success' , title: 'Success', message:  res.data.message});                                
                         delay(() => {
-                            valueDispatch({loader: {...dummies.modalProcess.hide}});
+                            closeAlert();
                             navigation.navigate('Home');
                         }, 2000);                                
                     }
-                }).catch((err) => {
-                    valueDispatch({ loader: { ...dummies.modalProcess.error, text: err.message }});
                 });
             } else {
-                valueDispatch({loader: {...dummies.modalProcess.error, text: res.data.errors}});
+                showAlert({alertType: 'error' , title: 'Error', message: res.data.errors});
             }
-        })
-        .catch((err) => {
-            valueDispatch({loader: {...dummies.modalProcess.error, text: err.message}});
-            console.error(err.message);
         });
     };
 
@@ -94,22 +81,17 @@ export const UpgradeAccount = ({route, navigation}) => {
             <View style={{flex: 1, alignItems: 'center'}}>
                 <View style={{ width: '90%'}}>
                     <Button onPress={() => {
-                        valueDispatch({ loader: { ...dummies.modalProcess.error, 
-                            icon: 'warning',
-                            color: 'orange',
-                            text: 'Are you sure you want to upgrade your account' } 
-                        })
+                       showAlert({
+                            alertType: 'warning' , 
+                            title: 'warning', 
+                            message: 'Are you sure to continue', 
+                            onPress: () => handleUpgrade
+                        });
                     }}
                     disabled={!selectedLevel}
                     buttonStyle={styles.button} title='Upgrade account' />
                 </View>
             </View>
-            <Loader
-                handleRetry={() => handleUpgrade() }
-                handler={() => valueDispatch({ loader: { ...dummies.modalProcess.hide}})}
-                props={valueState.loader}
-                actionText='Continue'
-            />
         </>
     );
 };

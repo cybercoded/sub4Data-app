@@ -1,14 +1,11 @@
 import React from "react";
 import WebView from "react-native-webview";
-import { Loader, styles } from "../components/global";
-import { View } from "react-native";
-import { dummies } from "../components/dummies";
-import { Context } from "../components/userContext";
+import Spinner from "react-native-loading-spinner-overlay";
+
 
 export const WebViewComponent = ({route, navigation}) => {
     const { url } = route.params;
-    const { valueState, valueDispatch } = React.useContext(Context);
-
+  
     return(
         <>
             <WebView
@@ -16,16 +13,12 @@ export const WebViewComponent = ({route, navigation}) => {
                     uri: url
                 }}
                 onLoadStart={() => {
-                    valueDispatch({ loader: { ...dummies.modalProcess.loading } })
+                    <Spinner visible={true} />
                 }}
                 onLoadEnd={() => {
-                    valueDispatch({ loader: { ...dummies.modalProcess.hide } })
+                    <Spinner visible={false} />
                 }}
                 onStartShouldSetResponder={() => true }
-            />
-            <Loader
-                handler={() => valueDispatch({ loader: { ...dummies.modalProcess.hide } })}
-                props={valueState.loader}
             />
         </>
     )

@@ -1,51 +1,47 @@
 import { View } from 'react-native';
 import React from 'react';
-import { API, Loader, ScrollViewHeader, styles } from '../components/global';
+import { Loader, ScrollViewHeader, getData, styles } from '../components/global';
 import { Button, Input } from 'react-native-elements';
-import { Context } from '../components/userContext';
+
 import { Formik } from 'formik';
 import { dummies } from '../components/dummies';
 import * as yup from 'yup';
 import startCase from "lodash/startCase";
 import { VerifyPin } from './verifyPin';
+import { showAlert } from 'react-native-customisable-alert';
+import axios from 'axios';
 
 export const BuyElectricity = ({ route, navigation }) => {
     const { id, name, image } = route.params;
-    const { valueState, valueDispatch } = React.useContext(Context);
     const formRef = React.useRef();
     const [pinScreen, setPinScreen] = React.useState(false);
     const [customerName, setCustomerName] = React.useState('');
+    const [userData, setUserData] = React.useState([]);
+    React.useEffect(() => {
+        getData('basicData').then(res => {
+            setUserData(res);
+        });
+    }, []);
 
     const handleVerifyPin = (meter_number, service_id) => {
-        valueDispatch({ loader: { ...dummies.modalProcess.loading } });
-        API.post(`meternumber-verification`, {meter_number: meter_number, service_id: service_id}).then((res) => {
+        axios.post(`meternumber-verification`, {meter_number: meter_number, service_id: service_id}).then((res) => {
             if (res.data.status === 200) {
                 setCustomerName(res.data.name);
-                valueDispatch({ loader: { ...dummies.modalProcess.hide } });
+                showAlert({alertType: 'success' , title: 'Success', message: 'Account successfully verified'});
             } else {
-                valueDispatch({
-                    loader: {
-                        ...dummies.modalProcess.error,
-                        title: res.data.errors,
-                        text: 'please try again!'
-                    }
-                });
+                showAlert({alertType: 'success' , title: 'Success', message: res.data.errors});
             }
-        })
-        .catch((error) => {
-            valueDispatch({ loader: { ...dummies.modalProcess.error, text: error.errors } });
-            console.error(error.message);
         });
     };
 
     return (
         <>
-            <View style={styles.container}>
+            <View style={styles.centerContainer}>
                 <View style={{ flex: 2 }}>
                     <ScrollViewHeader
                         image={{ uri: image }}
                         title={startCase(name)}
-                        subTitle={`Wallet Balance = ${valueState.basicData?.balance}`}
+                        subTitle={`Wallet Balance = ${userData.balance}`}
                     />
                 </View>
                 <View style={{ flex: 4, width: '100%' }}>
@@ -135,11 +131,6 @@ export const BuyElectricity = ({ route, navigation }) => {
                     </Formik>
                 </View>
             </View>
-
-            <Loader 
-                props={valueState.loader} 
-                handler={() => valueDispatch({ loader: { ...dummies.modalProcess.hide } })} 
-            />
 
             <VerifyPin
                 isVisible={pinScreen} 

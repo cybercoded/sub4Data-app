@@ -1,37 +1,65 @@
-import { View, Text, Image, Modal } from "react-native";
-import React, { useState } from "react";
-import {
-  BASE_URL,
-  styles,
-  Loader,
-  API,
-  theme,
-  ScrollViewHeader,
-} from "../components/global";
+import { View, Text, PermissionsAndroid, Platform } from "react-native";
+import React from "react";
+import {styles, theme, ScrollViewHeader, getData } from "../components/global";
 import { Button, ButtonGroup, Input, Switch } from "react-native-elements";
 import { Formik } from "formik";
 import * as yup from "yup";
-import { Context } from "../components/userContext";
-import { dummies } from "../components/dummies";
 import delay from "lodash/delay";
 import upperFirst from "lodash/upperFirst";
 import { VerifyPin } from "./verifyPin";
+import { closeAlert, showAlert } from "react-native-customisable-alert";
+import axios from "axios";
+import { selectContactPhone } from 'react-native-select-contact';
 
 export const BuyAirtime = ({ route, navigation }) => {
   const { api_product_id, id, image, slug } = route.params;
   const [value, setValue] = React.useState(false);
-  const { valueState, valueDispatch } = React.useContext(Context);
   const [pinScreen, setPinScreen] = React.useState(false);
   const formRef = React.useRef();
 
+  const [userData, setUserData] = React.useState([]);
+  React.useEffect(() => {
+    getData('basicData').then(res => {
+        setUserData(res);
+    });
+  }, []);
+
+  async function getPhoneNumber() {
+    // on android we need to explicitly request for contacts permission and make sure it's granted
+    // before calling API methods
+    alert()
+    if (Platform.OS === 'android') {
+      const request = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
+      );
+
+      // denied permission
+      if (request === PermissionsAndroid.RESULTS.DENIED) throw Error("Permission Denied");
+      
+      // user chose 'deny, don't ask again'
+      else if (request === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN) throw Error("Permission Denied");
+    }
+    
+    // Here we are sure permission is granted for android or that platform is not android
+    const selection = await selectContactPhone();
+    if (!selection) {
+        return null;
+    }
+            
+    let { contact, selectedPhone } = selection;
+    console.log(`Selected ${selectedPhone.type} phone number ${selectedPhone.number} from ${contact.name}`);
+    return selectedPhone.number;
+}
+    
+
   return (
-    <View style={styles.container}>
+    <View style={styles.centerContainer}>
       <Formik
         innerRef={formRef}
         initialValues={{
-          amount: 100,
-          phone: "09036989565",
-          api_product_id: api_product_id,
+          amount: '',
+          phone: "",
+          product_id: api_product_id,
         }}
         validateOnChange={true}
         validateOnMount={true}
@@ -47,54 +75,26 @@ export const BuyAirtime = ({ route, navigation }) => {
             .required("Amount is required"),
         })}
         onSubmit={(values) => {
-          valueDispatch({ loader: { ...dummies.modalProcess.loading } });
-          API.post(
-            `buy-services.php?userId=${valueState.basicData.userId}&service=airtime/`,
-            values
-          )
-            .then((res) => {
-              if (res.data.status === true) {
-                valueDispatch({
-                  loader: {
-                    ...dummies.modalProcess.success,
-                    text: res.data.message,
-                  },
-                });
+          axios.post(`airtime-purchase`, values).then((res) => {
+              if (res.data.status === 2000) {
+                showAlert({alertType: 'success' , title: 'Success', message: res.data.message});
                 delay(() => {
-                  valueDispatch({ loader: { ...dummies.modalProcess.hide } });
-                  navigation.navigate("Dashboard");
+                  closeAlert();
+                  navigation.navigate("Home");
                 }, 2000);
               } else {
-                valueDispatch({
-                  loader: {
-                    ...dummies.modalProcess.error,
-                    text: `Internal error: Code[${res.data.message}]`,
-                  },
-                });
+                showAlert({alertType: 'error' , title: 'Error', message: `Internal error: Code[${res.data.message}]`});
               }
-            })
-            .catch((error) => {
-              valueDispatch({
-                loader: { ...dummies.modalProcess.error, text: error.message },
-              });
             });
         }}
       >
-        {({
-          handleChange,
-          handleBlur,
-          handleSubmit,
-          isValid,
-          errors,
-          touched,
-          values,
-        }) => (
+        {({ handleChange, handleBlur, handleSubmit, isValid, errors, touched, values }) => (
           <>
             <View style={{ flex: 1 }}>
               <ScrollViewHeader
                 image={image}
                 title={`Purchase ${upperFirst(slug)} Airtime`}
-                subTitle={`Wallet Balance = ${valueState.basicData?.balance}`}
+                subTitle={`Wallet Balance = ${userData.balance}`}
               />
             </View>
 
@@ -122,6 +122,7 @@ export const BuyAirtime = ({ route, navigation }) => {
                 containerStyle={{ height: 50, marginHorizontal: 0 }}
                 buttons={["Select beneficiary", "Select contact"]}
               />
+              <Button onPress={() => getPhoneNumber} title="Pick a phone number" />
 
               <View style={{ marginTop: 10 }}>
                 <Button
@@ -152,14 +153,6 @@ export const BuyAirtime = ({ route, navigation }) => {
           </>
         )}
       </Formik>
-
-      <Loader
-        handleRetry={() => formRef.current.handleSubmit()}
-        handler={() =>
-          valueDispatch({ loader: { ...dummies.modalProcess.hide } })
-        }
-        props={valueState.loader}
-      />
 
       <VerifyPin
         isVisible={pinScreen}

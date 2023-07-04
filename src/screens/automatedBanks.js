@@ -1,30 +1,24 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import React, { Fragment } from 'react';
-import { FlatList, View } from 'react-native';
-import { Icon, Text } from 'react-native-elements';
-import { API, Loader, styles, theme } from '../components/global';
-import { Context } from '../components/userContext';
-import { dummies } from '../components/dummies';
+import React from 'react';
+import { View } from 'react-native';
+import { Text } from 'react-native-elements';
+import { styles, theme } from '../components/global';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
 import { useToast } from 'react-native-toast-notifications';
+import { showAlert } from 'react-native-customisable-alert';
 
 export const AutomatedBanks = ({navigation}) => {
     const toast = useToast();
-    const { valueState, valueDispatch } = React.useContext(Context);
     const [bankList, setBankLists] = React.useState([]);
 
     React.useEffect(() => {
-        valueDispatch({ loader: { ...dummies.modalProcess.loading } }); 
-        API.get(`get-user`).then((res) => {
+        axios.get(`get-user`).then((res) => {
             if ( res.data.status === 200) {
                 setBankLists(res.data.data.banks);
-                valueDispatch({ loader: { ...dummies.modalProcess.hide } });
             } else {
-                valueDispatch({ loader: { ...dummies.modalProcess.error, text: res.data.errors } });   
+                showAlert({alertType: 'errors' , title: 'Errors', message: res.data.errors});   
             }
-        }).catch(error => {
-            valueDispatch({ loader: { ...dummies.modalProcess.error, text: error.message } });
         });
 
     }, []);
@@ -78,11 +72,6 @@ export const AutomatedBanks = ({navigation}) => {
                 }
                 </View>
             </View>
-
-            <Loader
-                props={valueState.loader} 
-                handler={() => valueDispatch({ loader: { ...dummies.modalProcess.hide } })} 
-            />
         </>
     );
 };

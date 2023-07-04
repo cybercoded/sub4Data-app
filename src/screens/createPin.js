@@ -1,19 +1,19 @@
 import React from 'react'
 import { PinPad } from '../components/pinPad';
 import { VerifyPin } from './verifyPin';
-import { API, storeData, theme } from '../components/global';
+import { storeData, theme } from '../components/global';
 import { dummies } from '../components/dummies';
-import { Context } from '../components/userContext';
 import isObject from 'lodash/isObject';
 import { Text } from 'react-native-elements';
 import delay from 'lodash/delay';
+import { closeAlert, showAlert } from 'react-native-customisable-alert';
+import axios from 'axios';
 
 
 export const CreatePin = ({navigation}) => {
 
     const formRef = React.useRef();
     const [pinScreen, setPinScreen] = React.useState(true);
-    const { valueState, valueDispatch } = React.useContext(Context);
     const [pin1, setPin1] = React.useState('');
     const [pinCode, setPinCode] = React.useState([]);
     const [titleText, setTitleText] = React.useState("Create new Transaction Pin");
@@ -41,27 +41,21 @@ export const CreatePin = ({navigation}) => {
             
             if(pin1 === stringifiedPinCode) {
                 setTitleText(<Text style={{color: theme.colors.primary}}>Your PIN code was matched</Text>);
-
-                valueDispatch({loader: {...dummies.modalProcess.loading}});
-                API.put('update-pin', {pin: stringifiedPinCode}).then((res1) => {                    
+                axios.put('update-pin', {pin: stringifiedPinCode}).then((res1) => {                    
                     if ( res1.data.status === 200 ) {
-                        API.get(`get-user`).then((res) => {
+                        axios.get(`get-user`).then((res) => {
                             if ( res.data.status === 200) {                                       
                                 storeData('basicData', {...res.data.data});
-                                valueDispatch({loader: {...dummies.modalProcess.success, text: res1.data.message}});                                
+                                showAlert({alertType: 'success' , title: 'Success', message:  res1.data.message});                                
                                 delay(() => {
-                                    valueDispatch({loader: {...dummies.modalProcess.hide}});
+                                    closeAlert();
                                     navigation.navigate('Home');
                                 }, 2000);                                
                             }
-                        }).catch((err) => {
-                            valueDispatch({ loader: { ...dummies.modalProcess.error, text: err.message }});
                         });
                     } else {
-                        valueDispatch({loader: {...dummies.modalProcess.error, text: res1.data.errors}});
+                        showAlert({alertType: 'error' , title: 'Error', message: res1.data.errors});
                     }
-                }).catch(error => {
-                    valueDispatch({loader: {...dummies.modalProcess.error, text: error}});
                 }).finally(() => {
                     setPinCode([])
                 });

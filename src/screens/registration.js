@@ -1,40 +1,38 @@
 import React from 'react';
 import { Image, Modal, Pressable, View, SafeAreaView, ScrollView } from 'react-native';
 import { Formik } from 'formik';
-import { API, ErrorResponse, Loader, ScrollViewHeader, storeData, styles, theme } from '../components/global';
+import { ErrorResponse, Loader, ScrollViewHeader, storeData, styles, theme } from '../components/global';
 import { Button, Icon, Input, Switch, Text } from 'react-native-elements';
 import * as yup from 'yup';
-import { Context } from '../components/userContext';
 import delay from 'lodash/delay';
 import { dummies } from '../components/dummies';
-import axios from 'axios';
+import axios, {axios as publicAxios} from 'axios';
+import { closeAlert, showAlert } from 'react-native-customisable-alert';
+
 
 export const Registration = ({ navigation }) => {
-    const { valueState, valueDispatch } = React.useContext(Context);
     const [passwordVisibility, setPasswordVisibility] = React.useState(true);
     const [isReferred, setIsReferred] = React.useState(false);
 
     return (
         <>
-            <View style={styles.container}>
+            <View style={styles.centerContainer}>
                 <ScrollViewHeader
                     image={dummies.images.icon}
-                    title='Create free account on Tommytop'
+                    title='Create free account on Sub4Data'
                 />
 
                 <View style={{ flex: 5 }}>
                     <ScrollView>
                         <Formik
                             initialValues={{
-                                name: 'Oluwadare Tomiwa Kunle',
+                               /*  name: 'Oluwadare Tomiwa Kunle',
                                 email: 'cafeat9ja@gmail.coms',
-                                password: 'password'
+                                password: 'password' */
 
-                                /* fullNames: "",
+                                name: "",
                                 email: "",
-                                phoneNumber: "",
-                                password: "",
-                                referer: "", */
+                                password: ""
                             }}
                             validateOnChange={true}
                             validationSchema={yup.object().shape({
@@ -56,40 +54,31 @@ export const Registration = ({ navigation }) => {
                                     )
                             })}
                             onSubmit={(values) => {
-                                valueDispatch({ loader: { ...dummies.modalProcess.loading } });
-                                axios.get('https://sub4data.com.ng/laravel/sanctum/csrf-cookie').then(() => {
-                                    API.post(`register`, values).then((res) => {
+                                publicAxios.get('https://sub4data.com.ng/laravel/sanctum/csrf-cookie').then(() => {
+                                    axios.post(`register`, values).then((res) => {
                                         if (res.data.status === 200) {
                                             storeData('auth_token', res.data.token);
-                                            valueDispatch({ loader: { ...dummies.modalProcess.success, text: res.data.message } });
-                                            API.get(`user/`).then((res) => {
+                                            showAlert({alertType: 'success' , title: 'Success', message: res.data.message});
+                                            axios.get(`user/`).then((res) => {
                                                 if (res.data.status === true) {
                                                     valueDispatch({ basicData: res.data.data });
                                                     storeData('basicData', { ...res.data.data, isLoggedIn: true });
 
                                                     delay(() => {
-                                                        valueDispatch({ loader: { ...dummies.modalProcess.hide } });
+                                                        closeAlert();
                                                         navigation.navigate('Home');
                                                     }, 1000);
                                                 }
                                             });
                                         } else {
-                                            valueDispatch({ loader: { ...dummies.modalProcess.error, text: <ErrorResponse data={res.data.validation_errors} />} });
+                                            showAlert({alertType: 'error' , title: 'Error', message: <ErrorResponse data={res.data.validation_errors} />});
                                         }
-                                    }).catch((err) => {
-                                        valueDispatch({ loader: { ...dummies.modalProcess.error, text: err.message } });
-                                        console.error(err.message);
                                     });
                                 });
                             }}
                         >
                             {({ handleChange, handleBlur, handleSubmit, errors, isValid, touched, values }) => (
                                 <>
-                                    <Loader
-                                        handleRetry={handleSubmit}
-                                        handler={() => valueDispatch({ loader: { ...dummies.modalProcess.hide } })}
-                                        props={valueState.loader}
-                                    />
                                     <View>
                                         <Input
                                             placeholder="Full names"

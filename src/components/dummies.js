@@ -8,7 +8,7 @@ export const dummies = {
 
   menus: [
     { id: 1, icon: "home", text: "Dashboard", page: "Home" },
-    { id: 2, icon: "person-outline", text: "My Profile", page: "Profile" },
+    // { id: 2, icon: "person-outline", text: "My Profile", page: "Profile" },
     {
       id: 3,
       icon: "account-balance-wallet",
@@ -49,6 +49,12 @@ export const dummies = {
       icon: "history",
       text: "Transaction History",
       page: "TransactionHistory",
+    },
+    {
+      id: 10,
+      icon: "settings",
+      text: "Settings",
+      page: "Settings",
     },
     { 
       id: 11, 

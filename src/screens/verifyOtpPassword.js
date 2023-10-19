@@ -1,12 +1,12 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 import { Button, Input } from 'react-native-elements';
-import { BASE_URL, Loader, ScrollViewHeader, styles } from '../components/global';
+import { BASE_URL, ScrollViewHeader, styles } from '../components/global';
 import { Formik } from 'formik';
 import * as yup from "yup";
 import { dummies } from '../components/dummies';
 import delay from 'lodash/delay';
-import {axios as publicAxios} from 'axios';
+import axios, * as publicAxios from 'axios';
 import { closeAlert, showAlert } from 'react-native-customisable-alert';
 
 
@@ -15,7 +15,6 @@ export const VerifyOtpPassword = ({route, navigation}) => {
     const formRef = React.useRef();
 
     const handleSendPin = () => {
-        ;
         publicAxios.put(`${BASE_URL}api/resend-otp`, {email: email}).then((res) => {
             if ( res.data.status === 200 ) {
                 showAlert({alertType: 'success' , title: 'Success', message:  res.data.message});

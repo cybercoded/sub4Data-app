@@ -14,11 +14,10 @@ import {
 } from "../components/global";
 import { Button, Icon, Input, Text } from "react-native-elements";
 import { dummies } from "../components/dummies";
-
 import { VerifyPin } from "./verifyPin";
 
-export const Welcome = ({ navigation }) => {
 
+export const Welcome = ({ navigation }) => {
   const [pinScreen, setPinScreen] = React.useState(false);
   const windowsWidth  = Dimensions.get('window').width;
 
@@ -34,14 +33,13 @@ export const Welcome = ({ navigation }) => {
 
   React.useEffect(() => {
     getData('basicData').then(res => {
-      if( res.pin.length === 4 && res.isLoggedIn == true ) {
+      if( res.pin?.length === 4 && res.isLoggedIn == true ) {
         setPinScreen(true);
-        // navigation.navigate('Home');
         return;
-      }else if( res.pin.length === 4 && res.isLoggedIn == false ) {
+      }else if( res.pin?.length === 4 && res.isLoggedIn == false ) {
         navigation.navigate('Signin');
         return;
-      }else if( res?.pin.length === 0 ) {
+      }else if( res.pin?.length === 0 ) {
         navigation.navigate('Signin');
       }
     });
@@ -115,7 +113,7 @@ export const Welcome = ({ navigation }) => {
           <View style={{flex: 4}}>
             <View style={{width: windowsWidth-50}}>
                   <Button
-                    title="Prev"
+                    title={currentSlide > 1 ? "Prev" : "" }
                     type="clear"
                     disabled={currentSlide < 1}
                     buttonStyle={styles.button}
@@ -148,7 +146,8 @@ export const Welcome = ({ navigation }) => {
       <VerifyPin
           isVisible={pinScreen} 
           closePinScreen={() => setPinScreen(false)} 
-          action={() =>  navigation.navigate('Home') } 
+          action={() =>  navigation.navigate('Home') }
+          navigation={navigation}
       />
     </>
   );

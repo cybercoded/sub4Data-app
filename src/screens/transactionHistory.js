@@ -1,37 +1,23 @@
-import { TouchableOpacity, View, ScrollView, ActivityIndicator, Dimensions } from 'react-native'
-import React, { Fragment, useEffect } from 'react'
-import { Badge, Button, Icon, Input, ListItem, Overlay, SearchBar, Text } from 'react-native-elements';
-import { Loader, MyDatePicker, ReferencePreviewer, styles, theme } from '../components/global';
-import { Formik } from 'formik';
-import * as yup from 'yup';
-import isEmpty from 'lodash/isEmpty';
-
-import { dummies } from '../components/dummies';
-import { Picker } from '@react-native-picker/picker';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import { TouchableOpacity, View, ScrollView, FlatList, ActivityIndicator, Dimensions } from 'react-native'
+import React from 'react'
+import { Badge, Icon, ListItem, Text, Card } from 'react-native-elements';
+import { styles, theme } from '../components/global';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { showAlert } from 'react-native-customisable-alert';
+import TransactionFilter from "../components/transactionFilter";
+import axios from "axios";
+import { closeAlert, showAlert } from "react-native-customisable-alert";
 
 export const TransactionHistory = ({navigation}) => {
     const [histories, setHistories] = React.useState([]);
-      const [referenceScreenIsVisible, setReferenceScreenIsVisible] = React.useState(false);
-    const [filterScreenIsVisible, setFilterScreenIsVisible] = React.useState(false);
+    const [referenceScreenIsVisible, setReferenceScreenIsVisible] = React.useState(false);
     const [isLoadingMore, setIsLoadingMore] = React.useState(false);
     const [isLoadingMoreTextResponse, setIsLoadingMoreTextResponse] = React.useState();
     const [limit, setLimit] = React.useState(10);
-    const [productList, setProductList] = React.useState([]);
-    const [serviceList, setServiceList] = React.useState([]);
     const [singleTransaction, setSingleTransaction] = React.useState([]);
-    const [selectedProduct, setSelectedProduct] = React.useState();    
-    const [dateFrom, setDateFrom] = React.useState();    
-    const [dateTo, setDateTo] = React.useState();
     const scrollRef = React.useRef();
-    const [showDateFrom, setShowDateFrom] = React.useState(false);
-    const [showDateTo, setShowDateTo] = React.useState(false);
-
     const windowHeight = Dimensions.get('window').height;
 
-    useEffect(() => {
+    React.useEffect(() => {
         axios.get(`view-transactions/${limit}`).then((res) => {
             if(res.data.status === 200) {
                 setHistories(res.data.data);
@@ -39,10 +25,6 @@ export const TransactionHistory = ({navigation}) => {
             else {
                 showAlert({alertType: 'error' , title: 'Error', message: res.data.errors});
             }
-        });
-
-        axios.get(`view-product`).then((res) => {
-            setProductList(res.data.product);
         });
     }, []);
 
@@ -70,6 +52,7 @@ export const TransactionHistory = ({navigation}) => {
         }
     };
 
+
     const isCloseToBottom = ({layoutMeasurement, contentOffset, contentSize}) => {
         const paddingToBottom = 20;
         const scrollHeight = layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom;
@@ -77,11 +60,44 @@ export const TransactionHistory = ({navigation}) => {
         return scrollHeight;
     };
 
-    const fetchServices = () => {
-        axios.get(`view-services/${selectedProduct}`).then((res) => {
-            setServiceList(res.data.services);
-        });
-    };
+    const TransactionPreview = ({values}) => (
+        <View style={{width: '100%'}}>
+            <View style={styles.transactionTableList}>
+            <Text style={{fontWeight: 'bold'}}>Reference</Text>
+                <Text>{values.reference}</Text>
+            </View>
+            <View style={styles.transactionTableList}>
+                <Text style={{fontWeight: 'bold'}}>Name</Text>
+                <Text>{values.user?.
+                name}</Text>
+            </View>
+            <View style={styles.transactionTableList}>
+                <Text style={{fontWeight: 'bold'}}>Amount</Text>
+                <Text>{values.amount}</Text>
+            </View>
+            <View style={styles.transactionTableList}>
+                <Text style={{fontWeight: 'bold'}}>Product</Text>
+                <Text>{values.product?.name}</Text>
+            </View>
+            <View style={styles.transactionTableList}>
+                <Text style={{fontWeight: 'bold'}}>Service</Text>
+                <Text>{values.service?.name}</Text>
+            </View>
+            <View style={styles.transactionTableList}>
+                <Text style={{fontWeight: 'bold'}}>Description</Text>
+                <Text>{values.description}</Text>
+            </View>
+            <View style={styles.transactionTableList}>
+                <Text style={{fontWeight: 'bold'}}>Status</Text>
+                <Text>{values.status}</Text>
+            </View>
+            <View style={styles.transactionTableList}>
+                <Text style={{fontWeight: 'bold'}}>Date</Text>
+                <Text>{values.created_at}</Text>
+            </View>
+        
+        </View>
+    );
 
     return (
         <View style={styles.centerContainer}>
@@ -96,7 +112,13 @@ export const TransactionHistory = ({navigation}) => {
                     }}
                     scrollEventThrottle={400}
                 >
-                    <ListItem style={{marginBottom: 20}}  onPress={() => setFilterScreenIsVisible(true) } bottomDivider>
+                    <ListItem style={{marginBottom: 20}}  onPress={() => {
+                        showAlert({ 
+                            alertType: 'custom',
+                            customAlert: <TransactionFilter /> 
+                        }) }} 
+                        bottomDivider
+                    >
                         <Icon name='search' size={30} />
                         <ListItem.Content>
                             <ListItem.Title>Filter Transactions</ListItem.Title>
@@ -104,15 +126,22 @@ export const TransactionHistory = ({navigation}) => {
                         <MaterialCommunityIcons name='chevron-double-down' size={30} />
                     </ListItem>
                     
-                    {histories.map((item, index) => (
+                    <FlatList
+                            data={histories}
+                            ListEmptyComponent={() => <Card>
+                                <Card.Title>No transactions found</Card.Title>
+                            </Card>} 
+                            renderItem={({item, index}) => (
                             <ListItem
                                 key={index}
                                 Component={TouchableOpacity}
                                 bottomDivider={true}
                                 containerStyle={styles.productListStyle}
                                 onPress={() => {
-                                    setReferenceScreenIsVisible(true);
-                                    setSingleTransaction(item)
+                                    showAlert({ 
+                                        alertType: item.status == 'success' && 'success' || item.status == 'pending' && 'warning' || 'error',
+                                        message: <TransactionPreview values={item} /> 
+                                    }) 
                                 }}
                             >
                                 <ListItem.Content>
@@ -128,8 +157,8 @@ export const TransactionHistory = ({navigation}) => {
                                     } 
                                 />                       
                             </ListItem>
-                        ))
-                    }
+                        )}
+                    />
                     <View style={{flex: 1, alignItems: 'center'}}>
                         { isLoadingMore && 
                             <ActivityIndicator size='large' color={theme.colors.dim} /> 
@@ -141,172 +170,6 @@ export const TransactionHistory = ({navigation}) => {
                     
                 </ScrollView>
             </View>
-
-            <ReferencePreviewer
-                referenceScreenIsVisible={referenceScreenIsVisible}
-                singleTransaction={singleTransaction}
-                setReferenceScreenIsVisible={() => setReferenceScreenIsVisible(false) }
-            />
-
-            <Overlay isVisible={filterScreenIsVisible} onBackdropPress={() => setFilterScreenIsVisible(false)}>
-                <View style={{width: 300, borderRadius: 20, padding: 20}}>
-                    <Formik
-                        initialValues={{
-                            search: '',
-                            from: new Date(),
-                            to: new Date()
-                        }}
-                        onSubmit={(values) => {
-                            setFilterScreenIsVisible(false);
-                            axios.post(`filter-transactions`, values).then((res) => {
-                                if(res.data.status === 200) {
-                                    setHistories(res.data.data);
-                                }
-                                else {
-                                    showAlert({alertType: 'success' , title: 'Success', message: res.data.errors});
-                                }
-                            });
-                        }}
-                    >
-                        {({ values, setFieldValue, isValid, handleSubmit }) => (
-                            <Fragment>
-                                <View>
-                                    <Input
-                                        placeholder="Type Here..."
-                                        value={values.search}
-                                        inputContainerStyle={[styles.input, {paddingVertical: 5}]}
-                                        containerStyle={{ paddingHorizontal: 0 }}
-                                        onChangeText={(text) => setFieldValue('search', text)}              
-                                    />
-                                </View>
-                                <View style={{marginBottom: 10}}>
-                                    <Picker
-                                        style={styles.input}
-                                        mode='dropdown'
-                                        selectedValue={values.type}
-                                        onValueChange={(itemValue, itemIndex) => 
-                                            setFieldValue('type', itemValue)
-                                        }
-                                    >
-                                        <Picker.Item value="" label="Select Transaction Type "/>
-                                        <Picker.Item value="debit" label="Debit"/>
-                                        <Picker.Item value="credit" label="Credit"/>
-                                        <Picker.Item value="debit_transfer" label="Debit Transfer"/>
-                                        <Picker.Item value="credit_transfer" label="Credit Transfer"/>
-                                    </Picker>
-                                </View>
-                                
-                                <View style={{marginBottom: 10}}>
-                                    <Picker
-                                        style={styles.input}
-                                        mode='dropdown'
-                                        selectedValue={values.type}
-                                        onValueChange={(itemValue, itemIndex) => 
-                                            setFieldValue('status', itemValue)
-                                        }
-                                    >
-                                        <Picker.Item value="" label="Select Transaction Status "/>
-                                        <Picker.Item value="success" label="Success"/>
-                                        <Picker.Item value="failed" label="Failed"/>
-                                        <Picker.Item value="pending" label="Pending"/>
-                                    </Picker>
-                                </View>
-
-                                <View style={{marginBottom: 10}}>
-                                    <Picker
-                                        style={styles.input}
-                                        mode='dropdown'
-                                        selectedValue={values.product}
-                                        onValueChange={(itemValue, itemIndex) => {
-                                            setFieldValue('product', itemValue);
-                                            setSelectedProduct(itemValue)
-                                            fetchServices();
-                                        }}
-                                    >
-                                        <Picker.Item value="" label="Select Product"/>
-                                        { productList.map((item, index) => (
-                                            <Picker.Item key={index} value={item.id} label={item.name}/>
-                                        ))}
-                                    </Picker>
-                                </View>
-                                { !isEmpty(serviceList) &&
-                                    <View style={{marginBottom: 10}}>
-                                        <Text style={{marginBottom: 5}}>Services</Text>
-                                        <Picker
-                                            style={styles.input}
-                                            mode='dropdown'
-                                            selectedValue={values.service}
-                                            onValueChange={(itemValue, itemIndex) => {
-                                                setFieldValue('service', itemValue);
-                                                setSelectedProduct(itemValue)
-                                            }}
-                                        >
-                                            <Picker.Item value="" label="Select Service"/>
-                                            { serviceList?.map((item, index) => (
-                                                <Picker.Item key={index} value={item.id} label={item.name}/>
-                                            ))}
-                                        </Picker>
-                                    </View>
-                                }
-                                { showDateFrom && 
-                                    <DateTimePicker
-                                        value={values.from}
-                                        mode='date'
-                                        dateFormat="DD-MM-YYYY"
-                                        onChange={(e, date) => {
-                                            setFieldValue('from', date);
-                                            setShowDateFrom(false)
-                                        }}
-                                    />
-                                }
-                                { showDateTo &&
-                                    <DateTimePicker
-                                        value={values.to}
-                                        mode='date'
-                                        dateFormat="DD-MM-YYYY"
-                                        onChange={(e, date) => {
-                                            setFieldValue('to', date);
-                                            setShowDateTo(false)
-                                        }}
-                                    />
-                                }
-                                
-                                <Input
-                                    placeholder='Select date from'
-                                    value={values.from.toLocaleString()}
-                                    inputContainerStyle={[styles.input, {paddingVertical: 5}]}
-                                    containerStyle={{ paddingHorizontal: 0 }}
-                                    leftIcon={
-                                        <MaterialCommunityIcons
-                                            name="calendar-clock"
-                                            size={25}
-                                            color={theme.colors.primary}
-                                            onPress={() => setShowDateFrom(true)}
-                                        />
-                                    }
-                                />
-                                
-                                <Input
-                                    placeholder='Select date to'
-                                    value={values.to.toLocaleString()}
-                                    inputContainerStyle={[styles.input, {paddingVertical: 5}]}
-                                    containerStyle={{ paddingHorizontal: 0 }}
-                                    leftIcon={
-                                        <MaterialCommunityIcons
-                                            name="calendar-clock"
-                                            size={25}
-                                            color={theme.colors.primary}
-                                            onPress={() => setShowDateTo(true)}
-                                        />
-                                    }
-                                />
-
-                                <Button onPress={handleSubmit} title="Filter" buttonStyle={[styles.button, {width: 200, alignSelf: 'center'}]} />
-                            </Fragment>
-                        )}
-                    </Formik>
-                </View>
-        </Overlay>
-    </View>
-    )
+        </View>
+    );
 };

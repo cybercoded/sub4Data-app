@@ -8,7 +8,8 @@ export const UpdatePin = ({navigation}) => {
             <VerifyPin
                 isVisible={true} 
                 closePinScreen={() => navigation.goBack(null)} 
-                action={() =>  navigation.navigate('CreatePin') } 
+                action={() =>  navigation.navigate('CreatePin') }
+                navigation={navigation}
             />
         </>
     )

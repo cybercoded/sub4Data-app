@@ -1,6 +1,5 @@
 import React from "react";
-import { Loader, styles } from "../components/global";
-
+import { styles } from "../components/global";
 import { delay } from "lodash";
 import { View } from "react-native";
 import { Formik } from "formik";
@@ -8,7 +7,7 @@ import { Text, Input, Button } from "react-native-elements";
 import { dummies } from '../components/dummies';
 import * as yup from "yup";
 import { closeAlert, showAlert } from 'react-native-customisable-alert';
-
+import axios from "axios";
 
 export const UpdatePassword = ({navigation}) => {
 
@@ -16,8 +15,9 @@ export const UpdatePassword = ({navigation}) => {
 
     const [passwordState, setPasswordState] = React.useState();
 
-    const handleChangePassword = () => {  
-        axios.put(`update-password`, {password: passwordState.newPassword}).then((res) => {
+    const handleChangePassword = (values) => {  
+        closeAlert();
+        axios.put(`update-password`, {password: values.newPassword}).then((res) => {
             if (res.data.status === 200) {
                 showAlert({alertType: 'success' , title: 'Success', message: res.data.message});
                 delay(() => { 
@@ -38,8 +38,8 @@ export const UpdatePassword = ({navigation}) => {
             <Formik
                 innerRef={formRef}
                 initialValues={{
-                    oldPassword: 'tommy',
-                    newPassword: 'Tommy01'
+                    oldPassword: '',
+                    newPassword: ''
                 }}
                 validateOnChange={true}
                 validateOnMount={true}
@@ -58,11 +58,10 @@ export const UpdatePassword = ({navigation}) => {
                         if (res.data.status === 200) {
                             showAlert({
                                 alertType: 'warning' , 
-                                title: 'warning', 
-                                message: 'Are you sure to continue', 
-                                onPress: () => handleChangePassword
+                                title: 'Are you sure?', 
+                                message: 'Your password will be updated', 
+                                onPress: () => handleChangePassword({...values})
                             });
-                            setPasswordState(values);
                         } else {
                             showAlert({alertType: 'error' , title: 'Error', message: 'Incorrect Old Password, try again'});   
                         }

@@ -4,13 +4,14 @@ import { StatusBar } from "expo-status-bar";
 import { ThemeProvider } from "react-native-elements";
 import { ToastProvider } from "react-native-toast-notifications";
 import { BASE_URL, theme } from "./src/components/global";
-import { Context, initialValues, reducer } from "./src/components/userContext";
-import { Navigations } from "./src/components/navigations";
+import { RootNavigators } from "./src/components/rootNavigators";
 import axios from "axios";
 import Toast from 'react-native-toast-notifications';
 import Spinner from "react-native-loading-spinner-overlay";
 import CustomisableAlert from "react-native-customisable-alert";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { delay } from "lodash";
+// import * as SplashScreen from 'expo-splash-screen';
 
 axios.interceptors.request.use(
     async (config) => {
@@ -28,13 +29,14 @@ axios.interceptors.request.use(
     error =>  Promise.reject(error)
 );
 
+// SplashScreen.preventAutoHideAsync();
+
 const App = () => {
-    const [values, dispatch] = React.useReducer(reducer, initialValues);
-    const [isLoading, setIsLoading] = React.useState(false);
+    const [isReady, setIsReady] = React.useState(false);
 
     axios.interceptors.request.use(
         function (request) {
-            setIsLoading(true);
+            setIsReady(true);
             return request;
         },
 
@@ -43,30 +45,42 @@ const App = () => {
 
     axios.interceptors.response.use(
         function (response) {
-            setIsLoading(false);
+            setIsReady(false);
             return response;
         },
         function (error) {   
-            setIsLoading(false);
+            setIsReady(false);
             toast.hideAll();
             toast.show(error.message, {type: 'danger'});    
             return Promise.reject(error);
         }
     );
 
+    const onLayoutRootView = React.useCallback(async () => {
+        if (isReady) {
+          await SplashScreen.hideAsync();
+        }
+    }, [isReady]);
+    
+    if (!isReady) {
+        // return null;
+    }
+
     return (
-        <ToastProvider>
-            <StatusBar style="auto" />
+        <ToastProvider onLayout={onLayoutRootView}>
+            {/* <StatusBar style="auto" /> */}
             <ThemeProvider theme={theme}>
-                <Context.Provider value={{ valueState: values, valueDispatch: dispatch }}>
-                    <Navigations />
-                </Context.Provider>
+                <RootNavigators />
             </ThemeProvider>
 
-            <Spinner visible={isLoading} />
-            <CustomisableAlert />
+            <Spinner visible={isReady} />
+            <CustomisableAlert
+                btnStyle={{backgroundColor: theme.colors.primary}}
+                btnRightStyle={{backgroundColor: 'transparent', borderColor: theme.colors.primary, borderWidth: 1}}
+                btnRightLabelStyle={{color: theme.colors.primary}}
+                btnLeftLabelStyle={{color: theme.colors.white}}
+            />
             <Toast ref={(ref) => global['toast'] = ref}/>
-
         </ToastProvider>
     );
 };

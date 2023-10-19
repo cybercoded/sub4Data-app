@@ -1,21 +1,19 @@
 import { Formik } from "formik";
 import React from "react";
-import { BASE_URL, Loader, styles } from "../components/global";
+import { BASE_URL, styles } from "../components/global";
 import { View } from "react-native";
 import { Button, Input } from "react-native-elements";
 import * as yup from "yup";
-import { dummies } from "../components/dummies";
-import axios from "axios";
+import axios, * as publicAxios from 'axios';
 import delay from "lodash/delay";
 import { closeAlert, showAlert } from "react-native-customisable-alert";
 
 export const TransferFund = ({navigation}) => {
-    const [submitState, setSubmitState] = React.useState();
-      const [transferReceiverId, setTransferReceiverId] = React.useState();
     const formRef = React.useRef();
 
-    const handleTransferFund = () => {   
-        axios.put(`transfer-fund`, {...submitState, user_id: transferReceiverId}).then((res) => {
+    const handleTransferFund = (values) => { 
+        closeAlert(); 
+        axios.put(`transfer-fund`, values).then((res) => {
             if (res.data.status === 200) {
                 showAlert({alertType: 'success' , title: 'Success', message: res.data.message});
                 delay(() => {
@@ -31,12 +29,12 @@ export const TransferFund = ({navigation}) => {
     return (
         <>
             <View styles={styles.centerContainer}>
-                <View style={{flex: 1, alignItems: 'center'}}>
+                <View style={{flex: 10, alignItems: 'center'}}>
                     <Formik
                         innerRef={formRef}
                         initialValues={{
-                            email: 'cafeat9ja@gmail.com',
-                            amount: 100
+                            email: '',
+                            amount: ''
                         }}
                         validateOnChange={true}
                         validateOnMount={true}
@@ -51,14 +49,17 @@ export const TransferFund = ({navigation}) => {
                                 .max(5000, "Maximum amount of N5,000 is required")
                         })}
                         onSubmit={(values) => {
-                            setSubmitState(values);
-                            valueDispatch({ loader: { ...dummies.modalProcess.loading}});
                             publicAxios.get(`${BASE_URL}api/verify-user-email/${values.email}`).then((res) => { 
                                 if (res.data.status === 200) {              
-                                    valueDispatch({ loader: { ...dummies.modalProcess.warning } });
-                                    setTransferReceiverId(res.data.data.user_id)
+                                    showAlert({
+                                        alertType: 'warning', 
+                                        title: 'Are you sure?', 
+                                        message: `${values.amount} will be transferred to ${res.data.data.name}`, 
+                                        onPress: () => handleTransferFund({...values, user_id: res.data.data.user_id})
+                                    });
+                                    
                                 } else {
-                                    valueDispatch({ loader: { ...dummies.modalProcess.error, text: res.data.errors }});
+                                    showAlert({alertType: 'error' , title: 'Error', message: res.data.errors});   
                                 }
                             });
                         }}

@@ -1,12 +1,12 @@
 import React from 'react';
 import { Image, Modal, Pressable, View, SafeAreaView, ScrollView } from 'react-native';
 import { Formik } from 'formik';
-import { ErrorResponse, Loader, ScrollViewHeader, storeData, styles, theme } from '../components/global';
+import { BASE_URL, ErrorResponse, ScrollViewHeader, storeData, styles, theme } from '../components/global';
 import { Button, Icon, Input, Switch, Text } from 'react-native-elements';
 import * as yup from 'yup';
 import delay from 'lodash/delay';
 import { dummies } from '../components/dummies';
-import axios, {axios as publicAxios} from 'axios';
+import axios, * as publicAxios from 'axios';
 import { closeAlert, showAlert } from 'react-native-customisable-alert';
 
 
@@ -26,10 +26,6 @@ export const Registration = ({ navigation }) => {
                     <ScrollView>
                         <Formik
                             initialValues={{
-                               /*  name: 'Oluwadare Tomiwa Kunle',
-                                email: 'cafeat9ja@gmail.coms',
-                                password: 'password' */
-
                                 name: "",
                                 email: "",
                                 password: ""
@@ -54,26 +50,24 @@ export const Registration = ({ navigation }) => {
                                     )
                             })}
                             onSubmit={(values) => {
-                                publicAxios.get('https://sub4data.com.ng/laravel/sanctum/csrf-cookie').then(() => {
-                                    axios.post(`register`, values).then((res) => {
-                                        if (res.data.status === 200) {
-                                            storeData('auth_token', res.data.token);
-                                            showAlert({alertType: 'success' , title: 'Success', message: res.data.message});
-                                            axios.get(`user/`).then((res) => {
-                                                if (res.data.status === true) {
-                                                    valueDispatch({ basicData: res.data.data });
-                                                    storeData('basicData', { ...res.data.data, isLoggedIn: true });
+                                publicAxios.post(`${BASE_URL}api/register`, values).then((res) => {   
+                                    if (res.data.status === 200) {
+                                        storeData('auth_token', res.data.token);
+                                        showAlert({alertType: 'success' , title: 'Success', message: res.data.message});
+                                        axios.get(`user/`).then((res) => {
+                                            if (res.data.status === true) {
+                                                valueDispatch({ basicData: res.data.data });
+                                                storeData('basicData', { ...res.data.data, isLoggedIn: true });
 
-                                                    delay(() => {
-                                                        closeAlert();
-                                                        navigation.navigate('Home');
-                                                    }, 1000);
-                                                }
-                                            });
-                                        } else {
-                                            showAlert({alertType: 'error' , title: 'Error', message: <ErrorResponse data={res.data.validation_errors} />});
-                                        }
-                                    });
+                                                delay(() => {
+                                                    closeAlert();
+                                                    navigation.navigate('Home');
+                                                }, 1000);
+                                            }
+                                        });
+                                    } else {
+                                        showAlert({alertType: 'error' , title: 'Error', message: <ErrorResponse data={res.data.validation_errors} />});
+                                    }
                                 });
                             }}
                         >

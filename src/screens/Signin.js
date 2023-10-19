@@ -27,9 +27,8 @@ export const Signin = ({navigation}) => {
                 <Formik
                     initialValues={{
                         email: '',
-                        password: '',
+                        password: ''
                     }}
-                    validateOnChange={false}
                     validateOnMount={true}
                     validationSchema={ 
                         yup.object().shape({

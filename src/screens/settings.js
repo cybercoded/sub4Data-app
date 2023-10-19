@@ -1,8 +1,7 @@
-import { TouchableOpacity, View } from 'react-native'
+import { TouchableOpacity, View, ScrollView } from 'react-native'
 import React from 'react'
-import {Icon, ListItem } from 'react-native-elements';
+import {Icon, ListItem, Text } from 'react-native-elements';
 import { getData, styles, theme } from '../components/global';
-
 
 export const Settings = ({route, navigation}) => {
 
@@ -62,19 +61,19 @@ export const Settings = ({route, navigation}) => {
             { slug === "drawer" &&
                 <View
                         style={{
-                            flex: 1,
                             backgroundColor: theme.colors.primary,
                             padding: 10,
                             width: '100%'
                         }}
                     >
-                        <View style={styles.rowFlex}>
+                        <View style={[styles.rowFlex, {justifyContent: 'flex-start'}]}>
                             <Icon name="keyboard-backspace" style={{marginLeft: 20}} color={theme.colors.white} size={40} onPress={() => navigation.goBack(null) } />
+                            <Text h4 h4Style={{color: theme.colors.white, marginStart: 10}}>Settings</Text>
                         </View>
                 </View>
             }
-            <View style={{flex: 10, alignItems: 'center'}}>
-                <View style={{ width: '90%'}}>
+            <View style={{flex: 1, alignItems: 'center', marginTop: 20}}>
+                <ScrollView style={{ width: '90%'}}>
                     {  settingList.map((item, i) => {
                         if (item.page == "CreatePin" && currentPin != null) {
                             return;   
@@ -84,7 +83,7 @@ export const Settings = ({route, navigation}) => {
                                 key={i}
                                 Component={TouchableOpacity}
                                 bottomDivider={true}
-                                style={{marginVertical: 10}}
+                                containerStyle={styles.productListStyle}
                                 onPress={() => navigation.navigate(item.page)}
                             >
                                 <Icon name={item.icon} type="material-community" size={40} color="grey" />
@@ -96,7 +95,7 @@ export const Settings = ({route, navigation}) => {
                             </ListItem>
                         )
                     }) }
-                </View>
+                </ScrollView>
             </View>
         </>
     );

@@ -1,14 +1,12 @@
 import React from "react";
-import { BASE_URL, Loader, styles } from "../components/global";
-
+import { BASE_URL, styles } from "../components/global";
 import { delay } from "lodash";
 import { View } from "react-native";
 import { Formik } from "formik";
-import { Text, Input, Button } from "react-native-elements";
-import { dummies } from '../components/dummies';
+import { Input, Button } from "react-native-elements";
 import * as yup from "yup";
-import axios from "axios";
 import { closeAlert, showAlert } from "react-native-customisable-alert";
+import axios, * as publicAxios from 'axios';
 
 
 export const NewPassword = ({route, navigation}) => {

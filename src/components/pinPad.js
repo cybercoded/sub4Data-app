@@ -1,27 +1,16 @@
 import { TouchableOpacity, View } from 'react-native'
 import React from 'react'
-import { Loader, storeData, styles, theme } from './global';
-import { Button, Text, Icon } from 'react-native-elements';
-import indexOf from 'lodash/indexOf';
-import delay from 'lodash/delay';
-import { dummies } from './dummies';
+import { styles, theme } from './global';
+import { Text, Icon } from 'react-native-elements';
 import isEmpty from 'lodash/isEmpty';
-import { Context } from './userContext';
 
 export const PinPad = (props) => {
 
-    const {valueState, valueDispatch} = React.useContext(Context);
-
     const BUTTONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, <Icon size={30} color={theme.colors.primary} name='backspace' />];
     const [selectedPIN, setSelectedPIN] = React.useState(null);
-
     return (
       <>
         <View style={styles.centerContainer}>
-            <Loader
-                props={valueState.loader}
-                handler={() => valueDispatch({loader: {...dummies.modalProcess.hide}})}
-            />
             <View style={{flex: 1, alignItems: 'center'}}>
                 <View style={{marginBottom: 15}}>
                     <Text style={{fontWeight: 'bold', fontSize: 16, textAlign: 'center'}}>

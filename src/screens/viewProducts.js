@@ -1,11 +1,12 @@
 import { View, Text, TouchableOpacity, Image, ScrollView } from 'react-native';
 import React from 'react';
-import { ListItem } from 'react-native-elements';
+import { Card, ListItem } from 'react-native-elements';
 import { BASE_URL, ScrollViewHeader, styles } from '../components/global';
 import isObject from 'lodash/isObject';
 import upperFirst from 'lodash/upperFirst';
 import { showAlert } from 'react-native-customisable-alert';
 import axios from 'axios';
+import { FlatList } from 'react-native';
 
 export const ViewProducts = ({ route, navigation }) => {
     const [availableServices, setAvailableServices] = React.useState([]);
@@ -33,7 +34,12 @@ export const ViewProducts = ({ route, navigation }) => {
 
                 <View style={{ flex: 5, width: '100%' }}>
                     <ScrollView>
-                        { availableServices.map((item, index) => (
+                        <FlatList
+                            data={availableServices}
+                            ListEmptyComponent={() => <Card>
+                                <Card.Title>No {slug} product found</Card.Title>
+                            </Card>}
+                            renderItem={({ item, index }) => (
                                 <ListItem
                                     key={index}
                                     Component={TouchableOpacity}
@@ -59,8 +65,8 @@ export const ViewProducts = ({ route, navigation }) => {
                                     </ListItem.Content>
                                     <ListItem.Chevron size={40} />
                                 </ListItem>
-                            ))
-                        }
+                            )}
+                        />
                     </ScrollView>
                 </View>
             </View>

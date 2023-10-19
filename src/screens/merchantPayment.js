@@ -6,6 +6,7 @@ import { Button, Divider, Input } from "react-native-elements";
 import { Formik } from "formik";
 import * as yup from 'yup';
 import { showAlert } from 'react-native-customisable-alert';
+import axios from "axios";
 
 export const MerchantPayment = ({ navigation }) => {
       const [charges, setCharges] = React.useState(3);

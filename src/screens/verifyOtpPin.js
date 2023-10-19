@@ -1,15 +1,16 @@
-import { View, Text } from 'react-native'
+import { View } from 'react-native'
 import React from 'react'
-import { Button, Icon, Input } from 'react-native-elements';
-import { Loader, storeData, styles, theme } from '../components/global';
+import { Button, Input } from 'react-native-elements';
+import { styles, getData } from '../components/global';
 import { Formik } from 'formik';
 import * as yup from "yup";
-import { dummies } from '../components/dummies';
 import delay from 'lodash/delay';
 import { closeAlert, showAlert } from 'react-native-customisable-alert';
+import axios from "axios";
 
 export const VerifyOtpPIn = ({navigation}) => {
     const formRef = React.useRef();
+    const [userData, setUserData] = React.useState([]);
 
     const handleSendPin = () => {
         axios.get(`reset-pin`).then((res) => {
@@ -17,7 +18,6 @@ export const VerifyOtpPIn = ({navigation}) => {
                 showAlert({alertType: 'success' , title: 'Success', message:  res.data.message});
                 delay(() => {
                     closeAlert();
-                    valueDispatch({loader: {...dummies.modalProcess.hide}});
                 }, 1000)
                 
             } else {
@@ -28,6 +28,10 @@ export const VerifyOtpPIn = ({navigation}) => {
     
     React.useEffect(() => {
         handleSendPin();
+
+        getData('basicData').then(res => {
+            setUserData(res);
+        });
     }, [])
 
     return (
@@ -72,7 +76,7 @@ export const VerifyOtpPIn = ({navigation}) => {
                                     placeholder="Enter PIN"
                                     onChangeText={handleChange('pin')}
                                     onBlur={handleBlur('pin')}
-                                    label={`Enter the PIN sent to ${valueState.basicData?.email} `}
+                                    label={`Enter the PIN sent to ${userData.email} `}
                                     keyboardType='numeric'
                                     value={values.pin}
                                 />

@@ -1,6 +1,6 @@
 import { View, TouchableOpacity } from 'react-native';
 import React from 'react';
-import { ListItem } from 'react-native-elements';
+import { Card, ListItem } from 'react-native-elements';
 import { ScrollViewHeader, styles } from '../components/global';
 import { FlatList } from 'react-native';
 import isObject from 'lodash/isObject';
@@ -37,7 +37,9 @@ export const ViewServices = ({ route, navigation }) => {
                     <ScrollView>
                         <FlatList
                             data={availableServices}
-                            
+                            ListEmptyComponent={() => <Card>
+                                <Card.Title>No {slug} service found</Card.Title>
+                            </Card>}                         
                             renderItem={({ item, index }) => (
                                 <ListItem
                                     key={index}

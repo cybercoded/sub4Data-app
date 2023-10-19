@@ -33,10 +33,9 @@ import { ForgetPassword } from "../screens/forgetPassword";
 import { VerifyOtpPassword } from "../screens/verifyOtpPassword";
 import { NewPassword } from "../screens/newPassword";
 import { UpdatePin } from "../screens/updatePin";
-import TransferFund from "../screens/transferFund";
+import { TransferFund } from "../screens/transferFund";
 
-
-export const Navigations = () => {
+export const RootNavigators = () => {
   const Stack = createNativeStackNavigator();
 
   const Tab = createBottomTabNavigator();
@@ -93,7 +92,6 @@ export const Navigations = () => {
   }
 
   const Drawer = createDrawerNavigator();
-
   function MyDrawer() {
     return (
       <Drawer.Navigator
@@ -104,20 +102,22 @@ export const Navigations = () => {
           name="BottomHomeTabs" 
           component={BottomHomeTabs} 
           options={{ 
-            headerShown: false 
+            headerShown: false,
           }}
         />
       </Drawer.Navigator>
     );
   }
+
   return (
     <>
       <NavigationContainer>
         <Stack.Navigator            
-          initialRouteName="BuyAirtime"
+          initialRouteName="Welcome"
           screenOptions={{
             headerStyle: { backgroundColor: theme.colors.primary },
             headerTitleStyle: { color: 'white' },
+            contentStyle: {backgroundColor: '#fff'},
             headerLeft: () => ( <GoBackIcon /> )
           }}
         >
@@ -214,12 +214,17 @@ export const Navigations = () => {
             component={MerchantPayment}
           />
           <Stack.Screen
+            name="ViewServices"
+            component={ViewServices}
+            options={{ title: "Services Options" }}
+          />
+          <Stack.Screen
             name="BuyAirtime"
             component={BuyAirtime}
             options={{ title: "Buy Airtime" }}
             initialParams={{
                 id: 1,
-                api_product_id: 7,
+                api_product_id: 1,
                 image: 'image',
                 slug: 'airtime',
                 amount: 200,
@@ -227,24 +232,43 @@ export const Navigations = () => {
             }}
           />
           <Stack.Screen
-            name="ViewServices"
-            component={ViewServices}
-            options={{ title: "Services Options" }}
-          />
-          <Stack.Screen
             name="BuyBill"
             component={BuyBill}
             options={{ title: "Purchase Cable TV" }}
+            initialParams={{
+              id: 51,
+              api_product_id: 7,
+              image: 'image',
+              slug: 'bill',
+              amount: 200,
+              name: "200 bill"
+            }}
           />
           <Stack.Screen
             name="BuyData"
-            options={{ title: "Buy Data" }}
             component={BuyData}
+            options={{ title: "Buy Data" }}
+            initialParams={{
+              id: 1,
+              api_product_id: 7,
+              image: 'image',
+              slug: 'data',
+              amount: 200,
+              name: "200 data"
+            }}
           />
           <Stack.Screen
             name="BuyElectricity"
-            options={{ title: "Buy Electricity" }}
             component={BuyElectricity}
+            options={{ title: "Buy Electricity" }}
+            initialParams={{
+              id: 78,
+              api_product_id: 7,
+              image: 'image',
+              slug: 'electricity',
+              amount: 200,
+              name: "200 electricity"
+            }}
           />
           <Stack.Screen
             name="Settings"

@@ -1,15 +1,13 @@
 import { Alert, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import {Button, Icon, ListItem } from 'react-native-elements';
-import { Loader, getData, storeData, styles, theme } from '../components/global';
-
-import { dummies } from '../components/dummies';
+import { getData, storeData, styles, theme } from '../components/global';
 import delay from 'lodash/delay';
 import { closeAlert, showAlert } from 'react-native-customisable-alert';
-
+import axios from "axios";
 
 export const UpgradeAccount = ({route, navigation}) => {
-      const [levelLists, setLevelLists] = React.useState([]);
+    const [levelLists, setLevelLists] = React.useState([]);
     const [currentLevel, setCurrentLevel] = React.useState();
     const [selectedLevel, setSelectedLevel] = React.useState();
 
@@ -28,6 +26,7 @@ export const UpgradeAccount = ({route, navigation}) => {
     }, []);
 
     const handleUpgrade = () => {
+        closeAlert();
         axios.post(`upgrade-user`, {level: selectedLevel}).then((res) => {
             if ( res.data.status === 200 ) {
                 showAlert({alertType: 'success' , title: 'Success', message:  res.data.message+', please wait to be refreshed'});
@@ -49,7 +48,7 @@ export const UpgradeAccount = ({route, navigation}) => {
 
     return (
         <>
-            <View style={{flex: 10, alignItems: 'center'}}>
+            <View style={{flex: 10, alignItems: 'center', backgroundColor: theme.colors.white}}>
                 <View style={{ width: '90%'}}>
                     {  levelLists.map((item, i) => (
                         <ListItem
@@ -61,12 +60,12 @@ export const UpgradeAccount = ({route, navigation}) => {
                                     setSelectedLevel(item.level)
                                 }
                             }}
-                            containerStyle={{
+                            containerStyle={[styles.productListStyle, {
                                     marginVertical: 10,
                                     borderColor: selectedLevel === item.level && theme.colors.primary,
                                     borderWidth: selectedLevel === item.level && 2,
                                     backgroundColor: currentLevel >= item.level && theme.colors.dimmer
-                            }}
+                            }]}
                         >
                             <Icon name={item.icon} type="material-community" size={50} color="grey" />
                             <ListItem.Content>
@@ -83,9 +82,9 @@ export const UpgradeAccount = ({route, navigation}) => {
                     <Button onPress={() => {
                        showAlert({
                             alertType: 'warning' , 
-                            title: 'warning', 
-                            message: 'Are you sure to continue', 
-                            onPress: () => handleUpgrade
+                            title: 'Are you sure', 
+                            message: 'Your account will be upgraded!', 
+                            onPress: () => handleUpgrade()
                         });
                     }}
                     disabled={!selectedLevel}

@@ -6,7 +6,7 @@ import { Button, Icon, Input, Text } from 'react-native-elements';
 import * as yup from 'yup';
 import delay from 'lodash/delay';
 import { dummies } from '../components/dummies';
-import {axios as publicAxios} from 'axios';
+import axios, * as publicAxios from 'axios';
 import { closeAlert, showAlert } from 'react-native-customisable-alert';
 
 export const ForgetPassword = ({navigation}) => {  
@@ -52,11 +52,6 @@ export const ForgetPassword = ({navigation}) => {
                     }}>
                     {({ handleChange, handleBlur, handleSubmit, isValid, errors, touched, values }) => (
                         <View>
-                            <Loader
-                                handleRetry={handleSubmit}
-                                handler={() => valueDispatch({loader: {...valueState.loader, visible: false}})}
-                                props={valueState.loader}
-                            /> 
                             <Input 
                                 placeholder='Email address' 
                                 inputContainerStyle={styles.input} 
